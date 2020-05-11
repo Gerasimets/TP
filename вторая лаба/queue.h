@@ -17,11 +17,10 @@ private:
 	queue_element* end = 0; // указатель на последний элемент списка
 
 protected:
-	int size;	// количество элементов в списке
-	//void push(int new_value);  // добавление элемента в конец очереди
+	int size = 0;	// количество элементов в списке
 public:
 	queue(); // конструктор
-	/*explicit*/ queue(int size_par); //конструктор с параметром 
+	explicit queue(int size_par); //конструктор с параметром 
 	~queue(); //деструктор
 	queue(const queue& tmp_queue);//конструктор копирования 
 
@@ -31,8 +30,8 @@ public:
 	queue& operator = (const queue& tmp_queue); // присваивание 
 	void operator == (const queue tmp_queue); //== проверять поэлементно на равенство 
 	void operator != (const queue tmp_queue); //!= проверять поэлементно на неравенство
-	//вводить и выводит в поток
 	bool empty();  // функция  проверяет, пуста ли очередь
+	void out(); //вывод очереди на экран
 };
 
 	//void show(); //вывод очереди на экран
