@@ -27,13 +27,25 @@ bool queue::empty()
 
 queue::~queue() //деструктор
 {
-	while (/*this->*/size > 0) //если очередь не пуста
+	while (this->size > 0) //если очередь не пуста
 	{
 		queue_element* temp = end; //временная переменная, которой присвоили указатель на последний элемент
 		end = temp->prev; //предпоследний элемент становится последним
 		delete temp; //удаляем изначальный последний
 		size--;
 	}
+}
+
+void queue::out() // вывод на экран
+{
+	queue_element* temp = end; //временной переменной присваиваем указатель на последний элемент
+
+	while (temp->prev != nullptr) //пока не первый элемент
+	{
+		std::cout << temp->value << "  ->  "; //выводим значение
+		temp = temp->prev; //двигаемся по элементам
+	};
+	std::cout << temp->value << '\n'; //первый элемент выводим
 }
 
  queue::queue (const queue& tmp_queue) //конструктор копирования (очередь, которую копируем)
@@ -49,11 +61,16 @@ queue::~queue() //деструктор
 
 	for (int i = 0; i < tmp_queue.size; i++) // вставляем все элементы в новую очередь по порядку
 	{
-		this + temp1[i]; // добавляем копируемые элементы в очередь
+		queue_element* new_element = new queue_element; // выделить память под переменную типа queue_element и присвоить адрес
+													// начала выделенной памяти в переменную-указатель new_element
+		new_element->prev = end; //указатель на предыдущий элемент указывает на прошлый последний элемент
+		end = new_element;	// новый элемент теперь является концом списка
+		end->value = temp1[i]; //писваеваем значение// пойти по указателю end, получить переменную типа queue_element, которая там находится
+													//и в ней изменить поле value
+		size++;		// размер списка увеличился на единицу
 	}
 
 	delete[] temp1; //очищаем память
-	//this->show(); //выводим скопированную очередь
 }
 
  // добавление элемента в конец очереди
@@ -131,22 +148,56 @@ queue::~queue() //деструктор
 	 tmp_unit1->value = tmp_unit1->value * number; //для первого элемента
  }
 
- void queue::operator== (const queue tmp_queue)
+ void queue::operator == (const queue tmp_queue)
  {
 	 if (this->size != tmp_queue.size) //если не равен размер, то..
 	 {
-		 cout << "Очередь №1 не равна Очереди №2" << endl; //очереди не равны
+		 cout << "Размер очередей разный, элементы очереди не равны" << endl; //очереди не равны
 	 }
 	 else //если размер равен, сравниваем поэлементно
 	 {
-		 queue_element* tmp_comprasion = tmp_queue.end; // временный становится последним
-
-		 while (this->end->value == tmp_comprasion->value) //пока значения равны
+		queue_element* tmp_comprasion_1 = this->end;
+		queue_element* tmp_comprasion_2 = tmp_queue.end; // временный становится последним
+		int i = size;
+		 do
 		 {
-			 this->end = this->end->prev; //двигаемся по элементам
-			 tmp_comprasion = tmp_comprasion->prev;
-		 }
-
+			 if (tmp_comprasion_1->value == tmp_comprasion_2->value)
+			 {
+				 cout << "Элементы под номером: " << i-- << " равны" << endl;
+			 }
+			 else
+			 {
+				 cout << "Элементы под номером: " << i-- << " не равны" << endl;
+			 }
+			 tmp_comprasion_1 = tmp_comprasion_1->prev; //двигаемся по элементам
+			 tmp_comprasion_2 = tmp_comprasion_2->prev;
+		 } while (i != 0);
 	 }
+ }
 
+ void queue::operator != (const queue tmp_queue)
+ {
+	 if (this->size != tmp_queue.size) //если не равен размер, то..
+	 {
+		 cout << "Размер очередей разный, элементы очереди не равны" << endl; //очереди не равны
+	 }
+	 else //если размер равен, сравниваем поэлементно
+	 {
+		 queue_element* tmp_comprasion_1 = this->end;
+		 queue_element* tmp_comprasion_2 = tmp_queue.end; // временный становится последним
+		 int i = size;
+		 do
+		 {
+			 if (tmp_comprasion_1->value != tmp_comprasion_2->value)
+			 {
+				 cout << "Элементы под номером: " << i-- << " не равны" << endl;
+			 }
+			 else
+			 {
+				 cout << "Элементы под номером: " << i-- << " равны" << endl;
+			 }
+			 tmp_comprasion_1 = tmp_comprasion_1->prev; //двигаемся по элементам
+			 tmp_comprasion_2 = tmp_comprasion_2->prev;
+		 } while (i != 0);
+	 }
  }
