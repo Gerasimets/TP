@@ -6,12 +6,14 @@ using namespace std;
 class Ball : public Figure
 {
 private:
-	float radius; //радиус шара
+	
 protected:
+	
 public:
-	//деструктор
-	void enter(); //ввод данных
-	float space(); //площадь поверхности
-	void read(); // чтение из файла в массив
-	void write(); //ввод в файл и в массив
+	float radius; //радиус шара
+	Ball(); //конструктор
+	~Ball() override; //деструктор
+	void enter() override; //ввод данных
+	float space() override; //площадь поверхности
+	void read() override; // чтение из файла в массив
 };
