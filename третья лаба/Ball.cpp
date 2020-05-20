@@ -3,6 +3,16 @@
 
 using namespace std;
 
+Ball::Ball()
+{
+
+}
+
+Ball::~Ball()
+{
+
+}
+
 void Ball::enter()
 {
 	cout << "Введите данные" << endl;
@@ -18,11 +28,6 @@ float Ball::space()
 }
 
 void Ball::read()
-{
-
-}
-
-void Ball::write()
 {
 
 }
