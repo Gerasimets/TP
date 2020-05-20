@@ -2,12 +2,13 @@
 #include <iostream>
 #include "cmath"
 #include "Figure.h"
+#include <string>
 
 using namespace std;
 
 Tetrahedron::Tetrahedron()
 {
-
+	way = "Tetrahedron.txt";
 }
 
 Tetrahedron::~Tetrahedron()
