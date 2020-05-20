@@ -6,14 +6,15 @@ using namespace std;
 class Parallelepiped : public Figure
 {
 private:
+protected:
+public:
 	float height; // высота
 	float length; // длина
 	float width; // ширина
-protected:
-public:
-	//деструктор
-	void enter(); //ввод данных
-	float space(); //площадь поверхности
-	void read(); // чтение из файла в массив
-	void write(); //ввод в файл и в массив
+
+	Parallelepiped();
+	~Parallelepiped() override;//деструктор
+	void enter() override; //ввод данных
+	float space() override; //площадь поверхности
+	void read() override; // чтение из файла в массив
 };
