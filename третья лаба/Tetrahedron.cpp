@@ -1,8 +1,19 @@
 #include "Tetrahedron.h"
 #include <iostream>
 #include "cmath"
+#include "Figure.h"
 
 using namespace std;
+
+Tetrahedron::Tetrahedron()
+{
+
+}
+
+Tetrahedron::~Tetrahedron()
+{
+
+}
 
 void Tetrahedron::enter()
 {
@@ -18,11 +29,6 @@ float Tetrahedron::space()
 }
 
 void Tetrahedron::read()
-{
-
-}
-
-void Tetrahedron::write()
 {
 
 }
