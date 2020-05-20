@@ -3,6 +3,16 @@
 
 using namespace std;
 
+Parallelepiped::Parallelepiped()
+{
+
+}
+
+Parallelepiped::~Parallelepiped()
+{
+
+}
+
 void Parallelepiped::enter()
 {
 	cout << "Введите данные" << endl;
@@ -21,11 +31,6 @@ float Parallelepiped::space()
 }
 
 void Parallelepiped::read()
-{
-
-}
-
-void Parallelepiped::write()
 {
 
 }
