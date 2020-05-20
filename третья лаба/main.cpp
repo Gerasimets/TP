@@ -10,15 +10,22 @@ int main()
 {
 	setlocale(LC_ALL, "Rus");
 
-	Ball b;
-	Parallelepiped p;
-	Tetrahedron t;
+	//Ball b;
+	//Parallelepiped p;
+	//Tetrahedron t;
 
-	Figure mass[1];
+	Ball *B = 0;
+	Parallelepiped *P;
+	Tetrahedron *T;
+
+	Figure **mass = 0; // массив указателей
 
 	int action = 1;
 
-	int i = 0;
+	//int i = 0;
+
+	int k = 0;
+	int b = 0;
 
 	while (action)
 	{
@@ -37,15 +44,38 @@ int main()
 		case 0:
 			break;
 		case 1:
-			b.enter;
+			
+
+
+
+			mass = new Figure*[++k];
+			B = new Ball[++b];
+			cout << "Введите данные" << endl;
+			cout << "Радиус:";
+			cin >> B[b-1].radius;
+			cout << B[b].space() << endl;
+			B[b].write(mass[k-1]);
+
 			//увеличение массива
 
 			//mass[i++]= b.space;
 			break;
-		case 2:
-			break;
-		case 3:
-			break;
+		//case 2:
+		//	cout << "Введите данные" << endl;
+		//	cout << "Высота:";
+		//	cin >> p.height;
+		//	cout << "Длина:";
+		//	cin >> p.length;
+		//	cout << "Ширина:";
+		//	cin >> p.width;
+		//	//p.write(p.space);
+		//	break;
+		//case 3:
+		//	cout << "Введите данные" << endl;
+		//	cout << "Ребро:";
+		//	cin >> t.rib;
+		//	//t.write(t.space);
+		//	break;
 		case 4:
 			break;
 		case 5:
