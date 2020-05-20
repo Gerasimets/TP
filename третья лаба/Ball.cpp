@@ -1,11 +1,12 @@
 #include "Ball.h"
 #include <iostream>
-
+#include "Figure.h"
+#include <string>
 using namespace std;
 
 Ball::Ball()
 {
-
+	way = "ball.txt";
 }
 
 Ball::~Ball()
