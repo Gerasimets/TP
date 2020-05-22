@@ -11,7 +11,10 @@ protected:
 
 public:
 	Tetrahedron();
+	Tetrahedron(string path); //с параметром
+	Tetrahedron(const Tetrahedron& Tetrahedron_tmp); //копирования
 	~Tetrahedron() override;//деструктор
-
 	float space() override; //площадь поверхности
+	void enter() override;
+	void extention(Figure*& T, int& t, int v = 1) override;
 };
