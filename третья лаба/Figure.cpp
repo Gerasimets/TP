@@ -93,22 +93,11 @@ Figure& Figure::read(Figure** &massU, int &kp, int &np)
 			{
 				size = cnt / 2; // строк в файле в 2 раза меньше чем слов
 				mass_fig = new Ball[size]; // выделяем память под шары
+				//Ball obb;
 
-				Figure** mass_tmp = new Figure* [kp]; // выделяем память во временном массиве указателей
+				(*mass_fig).extent_uk(massU, kp, size); // увеличиваем массив указателей
 
-				for (int j = 0; j < (kp); j++) // перезаписываем данные из оригинального массива
-				{
-					mass_tmp[j] = massU[j];
-				}
-
-				massU = new Figure* [kp+size]; // увеличиваем размер оригинального массива
-
-				for (int j = 0; j < kp; j++) // перезаписываем временный в ориинальный
-				{
-					massU[j] = mass_tmp[j];
-				}
-
-				delete[] mass_tmp; // временный очищаем
+				//kp = kp - size;
 
 				for (np = 0; np != size; np++, kp++) // выводим все данные из файла в программу и на экран
 				{
@@ -133,22 +122,11 @@ Figure& Figure::read(Figure** &massU, int &kp, int &np)
 			{
 				size = cnt / 2;
 				mass_fig = new Tetrahedron[size];
+				//Tetrahedron obt; // пустой объект, нужен для вызова extent_uk
 
-				Figure** mass_tmp = new Figure * [kp]; // выделяем память во временном массиве указателей
+				(*mass_fig).extent_uk(massU, kp, size); // увеличиваем массив указателей
 
-				for (int j = 0; j < (kp); j++) // перезаписываем данные из оригинального массива
-				{
-					mass_tmp[j] = massU[j];
-				}
-
-				massU = new Figure * [kp + size]; // увеличиваем размер оригинального массива
-
-				for (int j = 0; j < (kp); j++) // перезаписываем временный в ориинальный
-				{
-					massU[j] = mass_tmp[j];
-				}
-
-				delete[] mass_tmp; // временный очищаем
+				//kp = kp - size;
 
 				for (np = 0; (np) != size; (np)++, (kp)++)
 				{
@@ -158,7 +136,7 @@ Figure& Figure::read(Figure** &massU, int &kp, int &np)
 					cout << "Площадь тетраэдра: " << mass_fig[np].result;
 					cout << ", ребро тетраэдра: " << mass_fig[np].rib << endl;
 
-					massU[(kp)] = &mass_fig[(np)];
+					massU[kp] = &mass_fig[np];
 				}
 			}
 		}
@@ -174,21 +152,11 @@ Figure& Figure::read(Figure** &massU, int &kp, int &np)
 				size = cnt / 4;
 				mass_fig = new Parallelepiped[size];
 
-				Figure** mass_tmp = new Figure * [kp]; // выделяем память во временном массиве указателей
+				//Parallelepiped obp;
 
-				for (int j = 0; j < (kp); j++) // перезаписываем данные из оригинального массива
-				{
-					mass_tmp[j] = massU[j];
-				}
+				(*mass_fig).extent_uk(massU, kp, size); // увеличиваем массив указателей
 
-				massU = new Figure * [kp + size]; // увеличиваем размер оригинального массива
-
-				for (int j = 0; j < (kp); j++) // перезаписываем временный в ориинальный
-				{
-					massU[j] = mass_tmp[j];
-				}
-
-				delete[] mass_tmp; // временный очищаем
+				//kp = kp - size;
 
 				for (np = 0; (np) != size; np++, kp++)
 				{
@@ -197,18 +165,35 @@ Figure& Figure::read(Figure** &massU, int &kp, int &np)
 					fin >> mass_fig[np].length;
 					fin >> mass_fig[np].height;
 
-
 					cout << "Площадь параллелепипеда: " << mass_fig[np].result;
 					cout << ", ширина параллелепипеда: " << mass_fig[np].width;
 					cout << ", длина параллелепипед: " << mass_fig[np].length;
 					cout << ", высота параллелепипеда: " << mass_fig[np].height << endl;
 
-					massU[(kp)] = &mass_fig[(np)];
+					massU[kp] = &mass_fig[np];
 				}
 			}
 		}
-
 		fin.close(); // закрываем файл
 	}
 	return *mass_fig; // возвращаем первый объект массива объектов
+}
+
+void Figure::extent_uk(Figure**& mass, int& k, int v)
+{
+	Figure** mass_tmp = new Figure* [k]; // выделяем память во временном массиве указателей
+
+	for (int j = 0; j < k; j++) // перезаписываем данные из оригинального массива
+	{
+		mass_tmp[j] = mass[j];
+	}
+
+	mass = new Figure * [k+v]; // увеличиваем размер оригинального массива
+
+	for (int j = 0; j < k; j++) // перезаписываем временный в ориинальный
+	{
+		mass[j] = mass_tmp[j];
+	}
+
+	delete[] mass_tmp; // временный очищаем
 }
