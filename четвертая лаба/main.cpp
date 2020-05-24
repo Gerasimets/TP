@@ -8,7 +8,7 @@ using namespace std;
 template <class T1>
 void inversion(T1* mas, int size)
 {
-	cout << size <<endl; //выводим размер массива
+	cout << size <<endl; // выводим размер массива
 	T1 *mass_tmp = new T1[size]; //выделяем память под временный массив
 	for (int i = 0; i < size; i++)
 	{
@@ -31,9 +31,11 @@ void inversion(T1* mas, int size)
 template <class T2, typename T3>
 void work_with_stack(T2* stack_ptr, T3 s)
 {
-	//srand(time(0)); // автоматическая рандомизация
-	T2 stack1(1 + rand() % 10);
-	stack_ptr = &stack1;
+	int S;
+	cin >> S;
+	T2 first_stack(S);
+	stack_ptr = new T2[1];
+	stack_ptr[0] = first_stack;
 	int menu2 = 1; // выбор пользователя в меню второго задания
 	int total = 1; // общее количество очередей или индекс последней созданной
 	int current_number = 0; // номер текущей очереди
@@ -62,10 +64,10 @@ void work_with_stack(T2* stack_ptr, T3 s)
 		switch (menu2)
 		{
 		case 0:
+			delete[] stack_ptr;
 			break;
 
 		case 1:
-			
 			cin >> val;
 			stack_ptr[current_number].push(val);
 			stack_ptr[current_number].show();
@@ -73,8 +75,20 @@ void work_with_stack(T2* stack_ptr, T3 s)
 			break;
 
 		case 2:
-			stack_ptr[current_number].pop();
-			stack_ptr[current_number].show();
+			try
+			{
+				if (stack_ptr[current_number].empty() == 0)
+				{
+					throw "Невозможно извлечь элемент из пустой очереди";
+				}
+				stack_ptr[current_number].pop();
+				stack_ptr[current_number].show();
+			}
+			catch (const char* ex)
+			{
+				cout << ex << endl;
+			}
+			
 			system("pause");
 			break;
 
@@ -84,173 +98,247 @@ void work_with_stack(T2* stack_ptr, T3 s)
 			break;
 
 		case 4:
-			current_number = total; // переключаемся на очередь, которую сейчас создадим
-			cout << "Переключение на новую очередь выполнено" << endl;
-
-			stack_tmp = new T2[++total]; // создаем временный массив, который на 1 больше общего количества очередей
-
-			for (int i = 0; i < total - 1; i++) // копируем все очереди кроме последней в новый массив
+			try
 			{
-				 stack_tmp[i] = stack_ptr[i];
+				for (int i = 0; i < total; i++)
+				{
+					if (stack_ptr[i].empty() == 0)
+					{
+						throw i;
+					}
+				}
+				
+				current_number = total; // переключаемся на очередь, которую сейчас создадим
+				cout << "Переключение на новую очередь выполнено" << endl;
+
+				stack_tmp = new T2[total]; // создаем временный массив, который на 1 больше общего количества очередей
+
+				for (int i = 0; i < total; i++) // копируем все очереди кроме последней в новый массив
+				{
+					stack_tmp[i] = stack_ptr[i];
+				}
+
+				delete[] stack_ptr;
+
+				stack_ptr = new T2[++total]; // выделяем память в старом массиве под новое количество очередей
+
+				for (int i = 0; i < total - 1; i++) // копируем все очереди из временного массива в старый
+				{
+					stack_ptr[i] = stack_tmp[i];
+				}
+
+				delete[] stack_tmp; // временный больше не нужен
+				//////////////////////////////////////////////////////////////////////////////////////////
+				cin >> S;
+
+				for (int i = 0; i < S; i++)
+				{
+					stack_ptr[current_number].push((130.0 + rand() % 56) / (2.0 + rand() % 2));
+				}
+
+				cout << "Текущая стек № " << current_number + 1 << ":" << endl;
+				stack_ptr[current_number].show();
 			}
-
-			//delete stack_ptr;
-
-			stack_ptr = new T2[total]; // выделяем память в старом массиве под новое количество очередей
-
-			for (int i = 0; i < total - 1; i++) // копируем все очереди из временного массива в старый
+			catch (const int i)
 			{
-				stack_ptr[i] = stack_tmp[i];
+				cout << "Стек под номером "<< i+1 <<" пуст, продолжите работу в нем" <<endl;
+				current_number = i;
+
+				for (int i = 0; i < total; i++) // выводим все очереди на экран
+				{
+					cout << "Стек № " << i + 1 << " состоит из:" << endl;
+					stack_ptr[i].show();
+				}
 			}
-
-			delete[] stack_tmp; // временный больше не нужен
-
-			
-			cin >> val;
-			stack_ptr[current_number].push(val);
-			cout << "Элемент добавлен в новую очередь" << endl;
-
-			cout << "Текущая очередь № " << current_number + 1 << ":" << endl;
-
-			stack_ptr[current_number].show();
 			system("pause");
 			break;
 
 		case 5:
 			for (int i = 0; i < total; i++) // выводим все очереди на экран
 			{
-				cout << "Очередь № " << i + 1 << " состоит из:" << endl;
-				stack_ptr[i].show();	
+				cout << "Стек № " << i + 1 << " состоит из:" << endl;
+				stack_ptr[i].show();
 			}
 			system("pause");
 			break;
 
 		case 6:
-			if (total == 1)
+			try 
 			{
-				cout << "существует только одна очередь" << endl;
-				break;
-			}
-			cout << "Введите номер очереди от 1 до " << total << " на которую следует переключиться:\n(кроме " << current_number + 1 << ", так как она сейчас используется)" << endl;
+				if (total == 1)
+				{
+					throw "Существует только один стек";
+				}
+				cout << "Введите номер очереди от 1 до " << total << " на которую следует переключиться:\n(кроме " << current_number + 1 << ", так как она сейчас используется)" << endl;
 
-			for (int i = 0; i < total; i++) // выводим все очереди на экран
-			{
-				cout << "Очередь № " << i + 1 << " состоит из:" << endl;
-				stack_ptr[i].show();
-			}
+				for (int i = 0; i < total; i++) // выводим все очереди на экран
+				{
+					cout << "Стек № " << i + 1 << " состоит из:" << endl;
+					stack_ptr[i].show();
+				}
 
-			cin >> choise;
-			system("cls");
-			choise--;
+				cin >> choise;
+				system("cls");
+				choise--;
 
-			if ((choise < 0) || (choise == current_number) || (choise >= total))
-			{
-				cout << "Некорректное значение. Переключение не выполнено" << endl;
+				if ((choise < 0) || (choise == current_number) || (choise >= total))
+				{
+					cout << "Некорректное значение. Переключение не выполнено" << endl;
+				}
+				else
+				{
+					current_number = choise;
+					cout << "Переключение выполнено" << endl;
+					cout << "Стек № " << current_number + 1 << " состоит из:" << endl;
+
+					stack_ptr[current_number].show();
+				}
 			}
-			else
+			catch (const char* ex)
 			{
-				current_number = choise;
-				cout << "Переключение выполнено" << endl;
-				cout << "Очередь № " << current_number + 1 << " состоит из:" << endl;
+				cout << ex << endl;
+			}
 			
-				stack_ptr[current_number].show();
-			}
 			system("pause");
 			break;
 
 		case 7:
-			cout << "Введите номер очереди c которой следует сложить от 1 до " << total << ":\n(кроме " << current_number + 1 << ", так как она сейчас используется)" << endl;
-			
-			for (int i = 0; i < total; i++) // выводим все очереди на экран
+			try
 			{
-				cout << "Очередь № " << i + 1 << " состоит из:" << endl;
-				stack_ptr[i].show();
-			}
-			
-			cin >> choise;
-			choise--;
+				if(total == 1)
+				{
+					throw "Существует только один стек";
+				}
 
-			if ((choise < 0) || (choise == current_number) || (choise >= total))
+				cout << "Введите номер очереди c которой следует сложить от 1 до " << total << ":\n(кроме " << current_number + 1 << ", так как она сейчас используется)" << endl;
+
+				for (int i = 0; i < total; i++) // выводим все очереди на экран
+				{
+					cout << "Очередь № " << i + 1 << " состоит из:" << endl;
+					stack_ptr[i].show();
+				}
+
+				cin >> choise;
+				choise--;
+
+				if ((choise < 0) || (choise == current_number) || (choise >= total))
+				{
+					cout << "Некорректное значение. Сложение не произведено" << endl;
+					system("pause");
+					break;
+				}
+				stack_ptr[current_number] + stack_ptr[choise];
+			}
+			catch (const char* ex)
 			{
-				cout << "Некорректное значение. Сложение не произведено" << endl;
-				system("pause");
-				break;
+				cout << ex << endl;
 			}
-			stack_ptr[current_number] + stack_ptr[choise];
-
 			system("pause");
 			break;
 
 		case 8:
-			cout << "Введите номер очереди которую следует вычесть от 1 до " << total << ":\n(кроме " << current_number + 1 << ", так как она сейчас используется)" << endl;
-
-			for (int i = 0; i < total; i++) // выводим все очереди на экран
+			try
 			{
-				cout << "Очередь № " << i + 1 << " состоит из:" << endl;
-				stack_ptr[i].show();
+				if (total == 1)
+				{
+					throw "Существует только один стек";
+				}
+
+				cout << "Введите номер очереди которую следует вычесть от 1 до " << total << ":\n(кроме " << current_number + 1 << ", так как она сейчас используется)" << endl;
+
+				for (int i = 0; i < total; i++) // выводим все очереди на экран
+				{
+					cout << "Очередь № " << i + 1 << " состоит из:" << endl;
+					stack_ptr[i].show();
+				}
+
+				cin >> choise;
+				choise--;
+
+				if ((choise < 0) || (choise == current_number) || (choise >= total))
+				{
+					cout << "Некорректное значение. Вычитание не произведено" << endl;
+					system("pause");
+					break;
+				}
+				stack_ptr[current_number] - stack_ptr[choise];
 			}
-
-			cin >> choise;
-			choise--;
-
-			if ((choise < 0) || (choise == current_number) || (choise >= total))
+			catch (const char* ex)
 			{
-				cout << "Некорректное значение. Вычитание не произведено" << endl;
-				system("pause");
-				break;
+				cout << ex << endl;
 			}
-			stack_ptr[current_number] - stack_ptr[choise];
-
 			system("pause");
 			break;
 
 		case 9:
-			cout << "Введите номер очереди которую следует присвоить от 1 до " << total << ":\n(кроме " << current_number + 1 << ", так как она сейчас используется)" << endl;
-
-			for (int i = 0; i < total; i++) // выводим все очереди на экран
+			try
 			{
-				cout << "Очередь № " << i + 1 << " состоит из:" << endl;
-				stack_ptr[i].show();
+				if (total == 1)
+				{
+					throw "Существует только один стек";
+				}
+
+				cout << "Введите номер очереди которую следует присвоить от 1 до " << total << ":\n(кроме " << current_number + 1 << ", так как она сейчас используется)" << endl;
+
+				for (int i = 0; i < total; i++) // выводим все очереди на экран
+				{
+					cout << "Очередь № " << i + 1 << " состоит из:" << endl;
+					stack_ptr[i].show();
+				}
+
+				cin >> choise;
+				choise--;
+
+				if ((choise < 0) || (choise == current_number) || (choise >= total))
+				{
+					cout << "Некорректное значение. Вычитание не произведено" << endl;
+					system("pause");
+					break;
+				}
+
+				stack_ptr[current_number] = stack_ptr[choise];
+
+				stack_ptr[current_number].show();
 			}
-
-			cin >> choise;
-			choise--;
-
-			if ((choise < 0) || (choise == current_number) || (choise >= total))
+			catch (const char* ex)
 			{
-				cout << "Некорректное значение. Вычитание не произведено" << endl;
-				system("pause");
-				break;
+				cout << ex << endl;
 			}
-
-			stack_ptr[current_number] = stack_ptr[choise];
-
-			stack_ptr[current_number].show();
-
 			system("pause");
 			break;
 
 		case 10:
-			cout << "Введите номер очереди которую следует сравнить с текущей от 1 до " << total << ":\n(кроме " << current_number + 1 << ", так как она сейчас используется)" << endl;
-
-			for (int i = 0; i < total; i++) // выводим все очереди на экран
+			try
 			{
-				cout << "Очередь № " << i + 1 << " состоит из:" << endl;
-				stack_ptr[i].show();
+				if (total == 1)
+				{
+					throw "Существует только один стек";
+				}
+
+				cout << "Введите номер очереди которую следует сравнить с текущей от 1 до " << total << ":\n(кроме " << current_number + 1 << ", так как она сейчас используется)" << endl;
+
+				for (int i = 0; i < total; i++) // выводим все очереди на экран
+				{
+					cout << "Очередь № " << i + 1 << " состоит из:" << endl;
+					stack_ptr[i].show();
+				}
+
+				cin >> choise;
+				choise--;
+
+				if ((choise < 0) || (choise == current_number) || (choise >= total))
+				{
+					cout << "Некорректное значение. Сравнение не произведено" << endl;
+					system("pause");
+					break;
+				}
+
+				stack_ptr[current_number] == stack_ptr[choise];
 			}
-
-			cin >> choise;
-			choise--;
-
-			if ((choise < 0) || (choise == current_number) || (choise >= total))
+			catch (const char* ex)
 			{
-				cout << "Некорректное значение. Сравнение не произведено" << endl;
-				system("pause");
-				break;
+				cout << ex << endl;
 			}
-
-			stack_ptr[current_number] == stack_ptr[choise];
-
 			system("pause");
 			break;
 
@@ -271,7 +359,7 @@ int main()
 
 	int menu_1 = 1; // выбор типа данных
 
-	int* mas1 = 0; //целочисленный массив
+	int* mas1 = 0; // целочисленный массив
 	float* mas2 = 0;
 	double* mas3 = 0;
 	char* mas4 = 0;
@@ -296,57 +384,100 @@ int main()
 			break;
 
 		case 1:
-			//srand(time(0)); // автоматическая рандомизация
-			size = 1 + rand() % 30; //размер массива
-			mas1 = new int[size]; //выделяем память под массив размером с задданный рандомом
-			for (int i = 0; i < size; i++) //заполняем массив
+			try
 			{
-				//srand(time(0)); // автоматическая рандомизация
-				mas1[i] = -30 + rand() % 61;
-			}
+				size = -60 + rand() % 119; //размер массива
+				if (size <= 0)
+				{
+					throw "Размер созданного рандомно массива оказадся меньше или равен нулю, выберите тип данных еще раз";
+				}
+				mas1 = new int[size]; //выделяем память под массив размером с задданный рандомом
+				for (int i = 0; i < size; i++) //заполняем массив
+				{
+					mas1[i] = -30 + rand() % 59;
+				}
 
-			inversion(mas1, size); //вызываем шаблонную функцию
-			delete[] mas1;
+				inversion(mas1, size); //вызываем шаблонную функцию
+				delete[] mas1;
+			}
+			catch (const char* ex)
+			{
+				cout << ex;
+				system("pause");
+			}
 			break;
 
 		case 2:
-			//srand(time(0)); // автоматическая рандомизация
-			size = 1 + rand() % 30; //размер массива
-			mas2 = new float[size];
-			for (int i = 0; i < size; i++)
+			try
 			{
-				//srand(time(0)); // автоматическая рандомизация
-				mas2[i] = (-60.0 + rand() % 121) / (2.0 + rand() % 2);
+				size = -60 + rand() % 119; //размер массива
+				if (size <= 0)
+				{
+					throw "Размер созданного рандомно массива оказадся меньше или равен нулю, выберите тип данных еще раз";
+				}
+				mas2 = new float[size]; //выделяем память под массив размером с задданный рандомом
+				for (int i = 0; i < size; i++) //заполняем массив
+				{
+					mas2[i] = (-60.0 + rand() % 119) / (2.0 + rand() % 2);
+				}
+
+				inversion(mas2, size);
+				delete[] mas2;
 			}
-			inversion(mas2, size);
-			delete[] mas2;
+			catch (const char* ex)
+			{
+				cout << ex;
+				system("pause");
+			}
 			break;
 
 		case 3:
-			//srand(time(0)); // автоматическая рандомизация
-			size = 1 + rand() % 30; //размер массива
-			mas3 = new double[size];
-			for (int i = 0; i < size; i++)
+			try
 			{
-				//srand(time(0)); // автоматическая рандомизация
-				mas3[i] = (-60.0 + rand() % 121) / (2.0 + rand() % 2);
+				size = -60 + rand() % 119; //размер массива
+				if (size <= 0)
+				{
+					throw "Размер созданного рандомно массива оказадся меньше или равен нулю, выберите тип данных еще раз";
+				}
+				mas3 = new double[size]; //выделяем память под массив размером с задданный рандомом
+				for (int i = 0; i < size; i++) //заполняем массив
+				{
+					mas3[i] = (-60.0 + rand() % 119) / (2.0 + rand() % 2);
+				}
+
+				inversion(mas3, size);
+				delete[] mas3;
 			}
-			inversion(mas3, size);
-			delete[] mas3;
+			catch (const char* ex)
+			{
+				cout << ex;
+				system("pause");
+			}
 			break;
 
 		case 4:
-			//srand(time(0)); // автоматическая рандомизация
-			size = 1 + rand() % 30; //размер массива
-			mas4 = new char[size];
-			for (int i = 0; i < size; i++)
+			try
 			{
-				//srand(time(0)); // автоматическая рандомизация
-				mas4[i] = 65 + rand() % 56;
-				//mas4[i] = 0 + rand() % 30;
+				size = -60 + rand() % 119; //размер массива
+				if (size <= 0)
+				{
+					throw "Размер созданного рандомно массива оказадся меньше или равен нулю, выберите тип данных еще раз";
+				}
+				mas4 = new char[size]; //выделяем память под массив размером с задданный рандомом
+				for (int i = 0; i < size; i++) //заполняем массив
+				{
+					mas4[i] = 65 + rand() % 56;
+					//mas4[i] = 0 + rand() % 30;
+				}
+
+				inversion(mas4, size);
+				delete[] mas4;
 			}
-			inversion(mas4, size);
-			delete[] mas4;
+			catch (const char* ex)
+			{
+				cout << ex;
+				system("pause");
+			}
 			break;
 
 		default:
@@ -386,23 +517,18 @@ int main()
 
 		case 1:
 			work_with_stack(stack1, x1);
-			delete[] stack1; ////////////////////////////////
-			//menu_2 = 0;
 			break;
 
 		case 2:
 			work_with_stack(stack2, x2);
-			delete[] stack2;
 			break;
 
 		case 3:
 			work_with_stack(stack3, x3);
-			delete[] stack3;
 			break;
 
 		case 4:
 			work_with_stack(stack4, x4);
-			delete[] stack4;
 			break;
 
 		default:
