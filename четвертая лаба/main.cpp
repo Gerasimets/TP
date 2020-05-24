@@ -8,8 +8,10 @@ using namespace std;
 template <class T1>
 void inversion(T1* mas, int size)
 {
-	cout << size <<endl; // выводим размер массива
-	T1 *mass_tmp = new T1[size]; //выделяем память под временный массив
+	cout << "Размер массива: ";
+	cout << size << endl; // выводим размер массива
+	T1* mass_tmp = new T1[size]; //выделяем память под временный массив
+	cout << "Элементы массива до инверсии:" << endl;
 	for (int i = 0; i < size; i++)
 	{
 		mass_tmp[i] = mas[i]; //перезаписываем оригинальный во временный
@@ -18,6 +20,7 @@ void inversion(T1* mas, int size)
 	}
 	cout << endl;
 
+	cout << "Элементы массива после инверсии:" << endl;
 	for (int i = 0, j = size - 1; i < size; i++, j--) //зеркалим массив и выводим
 	{
 		mas[i] = mass_tmp[j];
@@ -32,26 +35,27 @@ template <class T2, typename T3>
 void work_with_stack(T2* stack_ptr, T3 s)
 {
 	int S;
+	cout << "Введите размер стека: ";
 	cin >> S;
-	T2 first_stack(S);
-	stack_ptr = new T2[1];
-	stack_ptr[0] = first_stack;
+	T2 first_stack(S); //создаем новый объект, используя конструктор с параметром
+	stack_ptr = new T2[1]; //выделяем память под стек [1] - размер стека
+	stack_ptr[0] = first_stack; // в нулевую ячейку кледем наш первый стек
 	int menu2 = 1; // выбор пользователя в меню второго задания
-	int total = 1; // общее количество очередей или индекс последней созданной
-	int current_number = 0; // номер текущей очереди
-	T2* stack_tmp;
-	T3 val;
-	int choise; // номер выбранной пользователем очереди
+	int all_stack = 1; // общее количество стеков или индекс последней созданной
+	int number_this_stack = 0; // номер текущего стека
+	T2* stack_tmp; //временный массив стеков
+	T3 val; //значение
+	int choise; // номер выбранного пользователем стека
 
 	while (menu2)
 	{
 		system("cls");
-		cout << "Используется очередь № " << current_number + 1 << endl;
-		cout << "| 0| - Выход" << endl;
+		cout << "Используется стек № " << number_this_stack + 1 << endl;
+		cout << "| 0| - Выбрать другой тип данных" << endl;
 		cout << "| 1| - Добавление элемента к текущему стеку" << endl;
 		cout << "| 2| - Извлечение элемента из текущего стека" << endl;
 		cout << "| 3| - Вывод текущего стека на экран" << endl;
-		cout << "| 4| - Добавление элемента к новому стеку и переключение на него" << endl;
+		cout << "| 4| - Создание нового стека и переключение на него" << endl;
 		cout << "| 5| - Вывод всех стеков" << endl;
 		cout << "| 6| - Выбор другого стека" << endl;
 		cout << "| 7| - Сложить два стека" << endl;
@@ -59,7 +63,7 @@ void work_with_stack(T2* stack_ptr, T3 s)
 		cout << "| 9| - Присвоить один стек к другому" << endl;
 		cout << "|10| - Сравнение двух стеков" << endl;
 		cin >> menu2;
-		system("cls");
+		//system("cls");
 
 		switch (menu2)
 		{
@@ -68,83 +72,90 @@ void work_with_stack(T2* stack_ptr, T3 s)
 			break;
 
 		case 1:
+			cout << "Введите новый элемент стека: ";
 			cin >> val;
-			stack_ptr[current_number].push(val);
-			stack_ptr[current_number].show();
+			stack_ptr[number_this_stack].push(val); //добавляем новый элемент 
+			cout << "Элементы стека: ";
+			stack_ptr[number_this_stack].show();
 			system("pause");
 			break;
 
 		case 2:
 			try
 			{
-				if (stack_ptr[current_number].empty() == 0)
+				if (stack_ptr[number_this_stack].empty() == 0)
 				{
-					throw "Невозможно извлечь элемент из пустой очереди";
+					throw "Невозможно извлечь элемент из пустого стека";
 				}
-				stack_ptr[current_number].pop();
-				stack_ptr[current_number].show();
+				stack_ptr[number_this_stack].pop();
+				cout << "Элементы стека: ";
+				stack_ptr[number_this_stack].show();
 			}
 			catch (const char* ex)
 			{
 				cout << ex << endl;
 			}
-			
+
 			system("pause");
 			break;
 
 		case 3:
-			stack_ptr[current_number].show();
+			cout << "Используется стек № " << number_this_stack + 1 << endl;
+			cout << "Элементы стека: ";
+			stack_ptr[number_this_stack].show();
 			system("pause");
 			break;
 
 		case 4:
 			try
 			{
-				for (int i = 0; i < total; i++)
+				for (int i = 0; i < all_stack; i++)
 				{
 					if (stack_ptr[i].empty() == 0)
 					{
 						throw i;
 					}
 				}
-				
-				current_number = total; // переключаемся на очередь, которую сейчас создадим
-				cout << "Переключение на новую очередь выполнено" << endl;
 
-				stack_tmp = new T2[total]; // создаем временный массив, который на 1 больше общего количества очередей
+				number_this_stack = all_stack; // текущий стек будет равен номеру всех стеков (допустим кол-во стеков 1, номер текущего был 0, теперь станет 1)
+				cout << "Переключение на новый стек выполнено" << endl;
 
-				for (int i = 0; i < total; i++) // копируем все очереди кроме последней в новый массив
+				stack_tmp = new T2[all_stack]; // создаем временный массив стеков размером с количество имеющихся стеков
+
+				for (int i = 0; i < all_stack; i++) // копируем все стеки во временный массив
 				{
 					stack_tmp[i] = stack_ptr[i];
 				}
 
 				delete[] stack_ptr;
 
-				stack_ptr = new T2[++total]; // выделяем память в старом массиве под новое количество очередей
+				stack_ptr = new T2[++all_stack]; // выделяем память в старом массиве стеков под новое количество стеков
 
-				for (int i = 0; i < total - 1; i++) // копируем все очереди из временного массива в старый
+				for (int i = 0; i < all_stack - 1; i++) // копируем все стеки из временного массива стеков в старый массив стеков
 				{
 					stack_ptr[i] = stack_tmp[i];
 				}
 
 				delete[] stack_tmp; // временный больше не нужен
-				
+
+				cout << "Введите размер нового стека: ";
 				cin >> S;
 
 				for (int i = 0; i < S; i++)
 				{
-					stack_ptr[current_number].push((130.0 + rand() % 56) / (2.0 + rand() % 2));
+					stack_ptr[number_this_stack].push((130.0 + rand() % 56) / (2.0 + rand() % 2));
 				}
 
-				cout << "Текущая стек № " << current_number + 1 << ":" << endl;
-				stack_ptr[current_number].show();
+				cout << "Номер текущего стека: " << number_this_stack + 1 << endl;
+				cout << "Элементы стека: ";
+				stack_ptr[number_this_stack].show();
 			}
 			catch (const int i)
 			{
-				cout << "Стек под номером "<< i+1 <<" пуст, продолжите работу в нем" <<endl;
-				current_number = i;
+				cout << "Стек под номером " << i + 1 << " пуст, продолжите работу в нем" << endl;
+				number_this_stack = i;
 
-				for (int i = 0; i < total; i++) // выводим все очереди на экран
+				for (int i = 0; i < all_stack; i++) // выводим все стеки на экран
 				{
 					cout << "Стек № " << i + 1 << " состоит из:" << endl;
 					stack_ptr[i].show();
@@ -154,7 +165,7 @@ void work_with_stack(T2* stack_ptr, T3 s)
 			break;
 
 		case 5:
-			for (int i = 0; i < total; i++) // выводим все очереди на экран
+			for (int i = 0; i < all_stack; i++) // выводим все стеки на экран
 			{
 				cout << "Стек № " << i + 1 << " состоит из:" << endl;
 				stack_ptr[i].show();
@@ -163,71 +174,77 @@ void work_with_stack(T2* stack_ptr, T3 s)
 			break;
 
 		case 6:
-			try 
+			try
 			{
-				if (total == 1)
+				if (all_stack == 1)
 				{
 					throw "Существует только один стек";
 				}
-				cout << "Введите номер очереди от 1 до " << total << " на которую следует переключиться:\n(кроме " << current_number + 1 << ", так как она сейчас используется)" << endl;
 
-				for (int i = 0; i < total; i++) // выводим все очереди на экран
+				cout << "Выберете стек, с которым хотите работать (от 1 до " << all_stack << ")" << endl;
+				cout << "(кроме " << number_this_stack + 1 << ", так как вы сейчас с ним работаете)" << endl;
+
+				for (int i = 0; i < all_stack; i++) // выводим все стеки на экран
 				{
 					cout << "Стек № " << i + 1 << " состоит из:" << endl;
 					stack_ptr[i].show();
 				}
 
+				cout << "Какой стек выбираете?" << endl;
 				cin >> choise;
 				system("cls");
-				choise--;
+				choise--; //( допустим для пользователя это 2 стек, а для программы 1, поэтому -- для корректной работы)
 
-				if ((choise < 0) || (choise == current_number) || (choise >= total))
+				if ((choise < 0) || (choise == number_this_stack) || (choise >= all_stack)) //выбранный стек не должен быть меньше 0, равняься текущему(с которым работает пользователь,
+																							//не должен быть больше или равен количеству всех стеков(кол-во стеков 2, то есть это 0 и 1)
 				{
 					cout << "Некорректное значение. Переключение не выполнено" << endl;
 				}
 				else
 				{
-					current_number = choise;
+					number_this_stack = choise;  
 					cout << "Переключение выполнено" << endl;
-					cout << "Стек № " << current_number + 1 << " состоит из:" << endl;
+					cout << "Стек № " << number_this_stack + 1 << " состоит из:" << endl;
 
-					stack_ptr[current_number].show();
+					stack_ptr[number_this_stack].show();
 				}
 			}
 			catch (const char* ex)
 			{
 				cout << ex << endl;
 			}
-			
+
 			system("pause");
 			break;
 
 		case 7:
 			try
 			{
-				if(total == 1)
+				if (all_stack == 1)
 				{
 					throw "Существует только один стек";
 				}
 
-				cout << "Введите номер очереди c которой следует сложить от 1 до " << total << ":\n(кроме " << current_number + 1 << ", так как она сейчас используется)" << endl;
-
-				for (int i = 0; i < total; i++) // выводим все очереди на экран
+				cout << "Выберете стек, с которым хотите произвести сложение (от 1 до " << all_stack << ")" << endl;
+				cout << "(кроме " << number_this_stack + 1 << ", так как вы сейчас с ним работаете)" << endl;
+				for (int i = 0; i < all_stack; i++) // выводим все стеки на экран
 				{
-					cout << "Очередь № " << i + 1 << " состоит из:" << endl;
+					cout << "Стек № " << i + 1 << " состоит из:" << endl;
 					stack_ptr[i].show();
 				}
 
+				cout << "Какой стек выбираете?" << endl;
 				cin >> choise;
-				choise--;
+				choise--; //( допустим для пользователя это 2 стек, а для программы 1, поэтому -- для корректной работы)
 
-				if ((choise < 0) || (choise == current_number) || (choise >= total))
+				if ((choise < 0) || (choise == number_this_stack) || (choise >= all_stack)) //выбранный стек не должен быть меньше 0, равняься текущему(с которым работает пользователь,
+																							//не должен быть больше или равен количеству всех стеков(кол-во стеков 2, то есть это 0 и 1)
 				{
 					cout << "Некорректное значение. Сложение не произведено" << endl;
 					system("pause");
 					break;
 				}
-				stack_ptr[current_number] + stack_ptr[choise];
+				stack_ptr[number_this_stack] + stack_ptr[choise]; //складываем стеки, вызываем перегруженный +
 			}
 			catch (const char* ex)
 			{
@@ -239,29 +256,32 @@ void work_with_stack(T2* stack_ptr, T3 s)
 		case 8:
 			try
 			{
-				if (total == 1)
+				if (all_stack == 1)
 				{
 					throw "Существует только один стек";
 				}
 
-				cout << "Введите номер очереди которую следует вычесть от 1 до " << total << ":\n(кроме " << current_number + 1 << ", так как она сейчас используется)" << endl;
+				cout << "Выберете стек, который хотите вычесть (от 1 до " << all_stack << ")" << endl;
+				cout << "(кроме " << number_this_stack + 1 << ", так как вы сейчас с ним работаете)" << endl;
 
-				for (int i = 0; i < total; i++) // выводим все очереди на экран
+				for (int i = 0; i < all_stack; i++) // выводим все стеки на экран
 				{
-					cout << "Очередь № " << i + 1 << " состоит из:" << endl;
+					cout << "Стек № " << i + 1 << " состоит из:" << endl;
 					stack_ptr[i].show();
 				}
 
+				cout << "Какой стек выбираете?" << endl;;
 				cin >> choise;
-				choise--;
+				choise--; //( допустим для пользователя это 2 стек, а для программы 1, поэтому -- для корректной работы)
 
-				if ((choise < 0) || (choise == current_number) || (choise >= total))
+				if ((choise < 0) || (choise == number_this_stack) || (choise >= all_stack)) //выбранный стек не должен быть меньше 0, равняься текущему(с которым работает пользователь,
+																							//не должен быть больше или равен количеству всех стеков(кол-во стеков 2, то есть это 0 и 1)
 				{
 					cout << "Некорректное значение. Вычитание не произведено" << endl;
 					system("pause");
 					break;
 				}
-				stack_ptr[current_number] - stack_ptr[choise];
+				stack_ptr[number_this_stack] - stack_ptr[choise]; // вычитаем стеки, перегруженный -
 			}
 			catch (const char* ex)
 			{
@@ -273,32 +293,40 @@ void work_with_stack(T2* stack_ptr, T3 s)
 		case 9:
 			try
 			{
-				if (total == 1)
+				if (all_stack == 1)
 				{
 					throw "Существует только один стек";
 				}
 
-				cout << "Введите номер очереди которую следует присвоить от 1 до " << total << ":\n(кроме " << current_number + 1 << ", так как она сейчас используется)" << endl;
+				cout << "Выберете стек, который хотите присвоить (от 1 до " << all_stack << ")" << endl;
+				cout << "(кроме " << number_this_stack + 1 << ", так как вы сейчас с ним работаете)" << endl;
 
-				for (int i = 0; i < total; i++) // выводим все очереди на экран
+				for (int i = 0; i < all_stack; i++) // выводим все стеки на экран
 				{
-					cout << "Очередь № " << i + 1 << " состоит из:" << endl;
+					cout << "Стек № " << i + 1 << " состоит из:" << endl;
 					stack_ptr[i].show();
 				}
 
+				cout << "Какой стек выбираете?" << endl;;
 				cin >> choise;
-				choise--;
+				cout << "Стеку №" << number_this_stack + 1 << " будет присвоен стек №" << choise << endl;
+				choise--; //( допустим для пользователя это 2 стек, а для программы 1, поэтому -- для корректной работы)
 
-				if ((choise < 0) || (choise == current_number) || (choise >= total))
+				if ((choise < 0) || (choise == number_this_stack) || (choise >= all_stack)) //выбранный стек не должен быть меньше 0, равняься текущему(с которым работает пользователь,
+																							//не должен быть больше или равен количеству всех стеков(кол-во стеков 2, то есть это 0 и 1)
 				{
 					cout << "Некорректное значение. Вычитание не произведено" << endl;
 					system("pause");
 					break;
 				}
 
-				stack_ptr[current_number] = stack_ptr[choise];
+				stack_ptr[number_this_stack] = stack_ptr[choise]; //в текущий стек кладем(присваиваем) выбранный, перегруженное =
 
-				stack_ptr[current_number].show();
+				/*cout << "Выбранный стек состоит из: ";
+				stack_ptr[choise].show();*/
+
+				cout << "Текущий стек после изменений: ";
+				stack_ptr[number_this_stack].show();
 			}
 			catch (const char* ex)
 			{
@@ -310,30 +338,33 @@ void work_with_stack(T2* stack_ptr, T3 s)
 		case 10:
 			try
 			{
-				if (total == 1)
+				if (all_stack == 1)
 				{
 					throw "Существует только один стек";
 				}
 
-				cout << "Введите номер очереди которую следует сравнить с текущей от 1 до " << total << ":\n(кроме " << current_number + 1 << ", так как она сейчас используется)" << endl;
+				cout << "Выберете стек, с которым хотите сравнить (от 1 до " << all_stack << ")" << endl;
+				cout << "(кроме " << number_this_stack + 1 << ", так как вы сейчас с ним работаете)" << endl;
 
-				for (int i = 0; i < total; i++) // выводим все очереди на экран
+				for (int i = 0; i < all_stack; i++) // выводим все стеки на экран
 				{
-					cout << "Очередь № " << i + 1 << " состоит из:" << endl;
+					cout << "Стек № " << i + 1 << " состоит из:" << endl;
 					stack_ptr[i].show();
 				}
 
+				cout << "Какой стек выбираете?" << endl;;
 				cin >> choise;
-				choise--;
+				choise--; //( допустим для пользователя это 2 стек, а для программы 1, поэтому -- для корректной работы)
 
-				if ((choise < 0) || (choise == current_number) || (choise >= total))
+				if ((choise < 0) || (choise == number_this_stack) || (choise >= all_stack)) //выбранный стек не должен быть меньше 0, равняься текущему(с которым работает пользователь,
+																							//не должен быть больше или равен количеству всех стеков(кол-во стеков 2, то есть это 0 и 1)
 				{
 					cout << "Некорректное значение. Сравнение не произведено" << endl;
 					system("pause");
 					break;
 				}
 
-				stack_ptr[current_number] == stack_ptr[choise];
+				stack_ptr[number_this_stack] == stack_ptr[choise]; //сравниваем, вызывается перегруженный ==
 			}
 			catch (const char* ex)
 			{
@@ -369,13 +400,14 @@ int main()
 	while (menu_1)
 	{
 		system("cls");
-		cout << "С каким типом будет работать класс?" << endl;
-		cout << "|0| - Выход" << endl;
+		cout << "Задание №1 - инверсия массива" << endl;
+		cout << "Выберете тип данных" << endl;
+		cout << "|0| - Переход ко второму заданию" << endl;
 		cout << "|1| - int" << endl;
 		cout << "|2| - float" << endl;
 		cout << "|3| - double" << endl;
 		cout << "|4| - char" << endl;
-		
+
 		cin >> menu_1;
 
 		switch (menu_1)
@@ -389,9 +421,10 @@ int main()
 				size = -60 + rand() % 119; //размер массива
 				if (size <= 0)
 				{
-					throw "Размер созданного рандомно массива оказадся меньше или равен нулю, выберите тип данных еще раз";
+					throw "Размер созданного рандомно массива оказался меньше или равен нулю, выберите тип данных еще раз";
 				}
 				mas1 = new int[size]; //выделяем память под массив размером с задданный рандомом
+
 				for (int i = 0; i < size; i++) //заполняем массив
 				{
 					mas1[i] = -30 + rand() % 59;
@@ -402,7 +435,7 @@ int main()
 			}
 			catch (const char* ex)
 			{
-				cout << ex;
+				cout << ex << endl;
 				system("pause");
 			}
 			break;
@@ -413,7 +446,7 @@ int main()
 				size = -60 + rand() % 119; //размер массива
 				if (size <= 0)
 				{
-					throw "Размер созданного рандомно массива оказадся меньше или равен нулю, выберите тип данных еще раз";
+					throw "Размер созданного рандомно массива оказался меньше или равен нулю, выберите тип данных еще раз";
 				}
 				mas2 = new float[size]; //выделяем память под массив размером с задданный рандомом
 				for (int i = 0; i < size; i++) //заполняем массив
@@ -426,7 +459,7 @@ int main()
 			}
 			catch (const char* ex)
 			{
-				cout << ex;
+				cout << ex << endl;
 				system("pause");
 			}
 			break;
@@ -450,7 +483,7 @@ int main()
 			}
 			catch (const char* ex)
 			{
-				cout << ex;
+				cout << ex << endl;
 				system("pause");
 			}
 			break;
@@ -475,7 +508,7 @@ int main()
 			}
 			catch (const char* ex)
 			{
-				cout << ex;
+				cout << ex << endl;
 				system("pause");
 			}
 			break;
@@ -501,7 +534,8 @@ int main()
 	while (menu_2)
 	{
 		system("cls");
-		cout << "С каким типом будет работать класс?" << endl;
+		cout << "Задание №2 - стек" << endl;
+		cout << "С каким типом будет работать стек?" << endl;
 		cout << "|0| - Выход" << endl;
 		cout << "|1| - int" << endl;
 		cout << "|2| - float" << endl;
