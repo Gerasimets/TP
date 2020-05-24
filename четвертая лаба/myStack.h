@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include <iomanip>
-//#include <ctime>
 using namespace std;
 
 template <typename T2>
@@ -21,30 +20,26 @@ private:
 protected:
 
 public:
-	myStack(): size(0) // конструктор стэка
+	myStack(): size(0) // конструктор стека
 	{
 
 	};
 
-	myStack(int value): size(0)// конструктор стэка с параметром
+	myStack(int value): size(0)// конструктор стека с параметром
 	{
-		//srand(time(0)); // автоматическая рандомизация
 		for (int i = 0; i < value; i++)
 		{
-			//srand(time(0)); // автоматическая рандомизация
 			this->push((130.0 + rand() % 56) / (2.0 + rand() % 2));
 		}
 	};
 
-	~myStack() // деструктор стэка
+	~myStack() // деструктор стека
 	{
 		while (this->size > 0) // пока размер стэка больше нуля
 		{
-			Unit<T2>* current = last; // создаем текущую переменную, указывающую на конец стэка
-			last = current->prev; // сдвигаем конец к началу
-			delete current; // временная больше не нужна
-			size--; // один элемент удалили
+			this->pop();
 		}
+		system("cls");
 	};
 
 	void push(T2 value) // добавление элементов в конец очереди
@@ -80,16 +75,28 @@ public:
 
 	void show()
 	{
-		cout.setf(ios::fixed);
-
-		Unit<T2>* current = last; // создаем переменную, идем от конца к началу
-		while (current->prev != 0) // пока не дойдем до первого элемента
+		try
 		{
-			cout << setprecision(4) << current->value << " <- "; // выводим значение текущего
-			current = current->prev; // идем к началу
+			if (this->empty() == 0)
+			{
+				throw "Стек пуст";
+			}
+
+			cout.setf(ios::fixed);
+
+			Unit<T2>* current = last; // создаем переменную, идем от конца к началу
+			while (current->prev != 0) // пока не дойдем до первого элемента
+			{
+				cout << setprecision(4) << current->value << " <- "; // выводим значение текущего
+				current = current->prev; // идем к началу
+			}
+			cout << setprecision(4) << current->value << endl; // последний выводим отдельно
+			cout << resetiosflags(ios_base::floatfield);
 		}
-		cout << setprecision(4) << current->value << endl; // последний выводим отдельно
-		cout << resetiosflags(ios_base::floatfield);
+		catch (const char* ex)
+		{
+			cout << ex << endl;
+		}
 	}
 
 	myStack& operator = (const myStack& tmp_stack) // перегрузка оператора присваивания
@@ -199,5 +206,14 @@ public:
 		{
 			cout << "стеки не равны" << endl;
 		}
+	}
+
+	bool empty()
+	{
+		if (size == 0)
+		{
+			return 0;
+		}
+		return 1;
 	}
 };
