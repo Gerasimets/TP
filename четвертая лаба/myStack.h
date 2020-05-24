@@ -4,28 +4,27 @@
 using namespace std;
 
 template <typename T2>
-struct Unit
+struct Stack_element
 {
-	T2 value = 0; // значение элемента очереди
-	Unit<T2>* prev = 0; // ссылка на предыдущий элемент очереди
+	T2 value = 0; // значение элемента стека
+	Stack_element<T2>* prev = 0; // ссылка на предыдущий элемент стека
 };
 
 template <typename T2>
 class myStack
 {
 private:
-	Unit<T2>* last = 0; // конец очереди
-	int size; // размер очереди
-
+	Stack_element<T2>* last = 0; // указатель на последний элемент стека
+	int size; // размер стека
 protected:
 
 public:
-	myStack(): size(0) // конструктор стека
+	myStack() : size(0) // конструктор стека
 	{
 
 	};
 
-	myStack(int value): size(0)// конструктор стека с параметром
+	myStack(int value) : size(0)// конструктор стека с параметром
 	{
 		for (int i = 0; i < value; i++)
 		{
@@ -42,19 +41,19 @@ public:
 		system("cls");
 	};
 
-	void push(T2 value) // добавление элементов в конец очереди
+	void push(T2 value) // добавление элементов в конец стека
 	{
-		Unit<T2>* new_unit = new(Unit<T2>); // выделяем память под новый элемент
-		new_unit->prev = last; // новый элемент будет ссылаться на последний
-		new_unit->value = value; // изменяем значение нового элемента
-		last = new_unit; // последний элемент изменился
+		Stack_element<T2>* new_element = new(Stack_element<T2>); // выделяем память под новый элемент ///////////////////////////////////////////////////
+		new_element->prev = last; // новый элемент будет ссылаться на последний
+		new_element->value = value; // изменяем значение нового элемента
+		last = new_element; // последний элемент изменился
 		size++; // добавили один элемент
 	};
 
-	void pop() // извлекаем первый элемент из очереди
+	void pop() // извлекаем последний(головной) элемент из стека
 	{
-		T2 now_ex = 0; // извлеченный элемент
-		now_ex = last->value;
+		T2 deleted_element = 0; // извлеченный элемент
+		deleted_element = last->value; //присваиваем значение последнего элемента 
 		if (size == 1) // если в стеке 1 элемент
 		{
 			delete last; // удаляем указатель на него
@@ -62,18 +61,18 @@ public:
 		}
 		else // если больше одного элемента
 		{
-			Unit<T2>* current = last; // создаем переменную, которая будет идти от конца
-			last = last->prev;
-			delete current;
-			current = nullptr;
+			Stack_element<T2>* element_to_delete = last; // создаем переменную, которая будет идти от конца
+			last = last->prev; //в указатель на последний присваиваем предыдущий
+			delete element_to_delete; //удаляем элемент
+			element_to_delete = nullptr;
 		}
-		size--; // извлекли один элемент
+		size--; // извлекли один элемент, уменьшили размер стека
 		cout.setf(ios::fixed);
-		cout << "Извлеченыый элемент: " << setprecision(4) << now_ex << endl;
+		cout << "Извлеченыый элемент: " << setprecision(4) << deleted_element << endl;
 		cout << resetiosflags(ios_base::floatfield);
 	}
 
-	void show()
+	void show() //вывод стека на экран
 	{
 		try
 		{
@@ -84,7 +83,7 @@ public:
 
 			cout.setf(ios::fixed);
 
-			Unit<T2>* current = last; // создаем переменную, идем от конца к началу
+			Stack_element<T2>* current = last; // создаем переменную, идем от конца к началу
 			while (current->prev != 0) // пока не дойдем до первого элемента
 			{
 				cout << setprecision(4) << current->value << " <- "; // выводим значение текущего
@@ -107,25 +106,25 @@ public:
 		}
 		system("cls");
 
-		T2* masValueStack = new T2[tmp_stack.size]; // создаем массив размером с длину стека
-		Unit<T2>* tmp_unit1 = tmp_stack.last; // временный становится последним
+		T2* tmp_mass_stack = new T2[tmp_stack.size]; // создаем массив размером с длину стека
+		Stack_element<T2>* tmp_last = tmp_stack.last; // временный становится последним
 
 		for (int i = tmp_stack.size - 1; i >= 0; i--)
 		{
-			masValueStack[i] = tmp_unit1->value; // записываем в масив с конца
-			tmp_unit1 = tmp_unit1->prev; // временный идет от конца к началу
+			tmp_mass_stack[i] = tmp_last->value; // записываем в масив с конца
+			tmp_last = tmp_last->prev; // временный идет от конца к началу
 		}
 
 		for (int i = 0; i < tmp_stack.size; i++)
 		{
-			this->push(masValueStack[i]); // вставляем с перевого и до последнего элемента в очередь
+			this->push(tmp_mass_stack[i]); // вставляем с перевого и до последнего элемента в ячейку массива стеков
 		}
 
-		delete[] masValueStack; // временный массив больше не нужен
-		return *this; // возвращаем указатель на очередь
+		delete[] tmp_mass_stack; // временный массив больше не нужен
+		return *this; // возвращаем указатель на стек///////////////////////////////////////////////////////////
 	}
 
-	void operator + (myStack<T2>& Stack_tmp) // сложение двух очередей
+	void operator + (myStack<T2>& Stack_tmp) // сложение двух стеков
 	{
 		if (size != Stack_tmp.size) // если размер не совпадает, дальше смотреть не будем
 		{
@@ -133,21 +132,21 @@ public:
 		}
 		else
 		{
-			Unit<T2>* current_item1 = last; // указываем на конец текущей очереди
-			Unit<T2>* current_item2 = Stack_tmp.last; // и на конец второй
-			while (current_item1->prev != 0) // пока не дойдем до первого элемента
+			Stack_element<T2>* current_last_tmp = last; // указываем на конец текущего стека
+			Stack_element<T2>* current_last_tmp2 = Stack_tmp.last; // и на конец второго
+			while (current_last_tmp->prev != 0) // пока не дойдем до первого элемента
 			{
-				current_item1->value += current_item2->value; // прибавляем к значению текущей значение второй
-				current_item1 = current_item1->prev; // двигаем к началу текущую
-				current_item2 = current_item2->prev; // двигаем к началу вторую
+				current_last_tmp->value += current_last_tmp2->value; // прибавляем к значению текущей значение второй
+				current_last_tmp = current_last_tmp->prev; // двигаем к началу текущую
+				current_last_tmp2 = current_last_tmp2->prev; // двигаем к началу вторую
 			}
-			current_item1->value += current_item2->value; // к первому тоже прибавляем
-			cout << "Новый стек " << endl ; // выводим на экран
+			current_last_tmp->value += current_last_tmp2->value; // к первому тоже прибавляем
+			cout << "Новый стек:" << endl; // выводим на экран
 			this->show();
 		}
 	}
 
-	void operator - (myStack<T2>& Stack_tmp) // сложение двух очередей
+	void operator - (myStack<T2>& Stack_tmp) // сложение двух стеков
 	{
 		if (size != Stack_tmp.size) // если размер не совпадает, дальше смотреть не будем
 		{
@@ -155,16 +154,16 @@ public:
 		}
 		else
 		{
-			Unit<T2>* current_item1 = last; // указываем на конец текущей очереди
-			Unit<T2>* current_item2 = Stack_tmp.last; // и на конец второй
-			while (current_item1->prev != 0) // пока не дойдем до первого элемента
+			Stack_element<T2>* current_last_tmp = last; // указываем на конец текущего стека
+			Stack_element<T2>* current_last_tmp2 = Stack_tmp.last; // и на конец второй
+			while (current_last_tmp->prev != 0) // пока не дойдем до первого элемента
 			{
-				current_item1->value -= current_item2->value;
-				current_item1 = current_item1->prev; // двигаем к началу текущую
-				current_item2 = current_item2->prev; // двигаем к началу вторую
+				current_last_tmp->value -= current_last_tmp2->value;
+				current_last_tmp = current_last_tmp->prev; // двигаем к началу текущую
+				current_last_tmp2 = current_last_tmp2->prev; // двигаем к началу вторую
 			}
-			current_item1->value -= current_item2->value;
-			cout << "Новый стек " << endl; // выводим на экран
+			current_last_tmp->value -= current_last_tmp2->value;
+			cout << "Новый стек:" << endl; // выводим на экран
 			this->show();
 		}
 	}
@@ -174,13 +173,13 @@ public:
 		int x = 1;
 		if (this->size != tmp_stack.size) //если не равен размер, то..
 		{
-			cout << "Размер стеков разный" << endl; //очереди не равны
+			cout << "Размер стеков разный" << endl; //стеки не равны
 			x = 0;
 		}
 		else //если размер равен, сравниваем поэлементно
 		{
-			Unit<T2>* tmp_comprasion_1 = this->last;
-			Unit<T2>* tmp_comprasion_2 = tmp_stack.last; // временный становится последним
+			Stack_element<T2>* tmp_comprasion_1 = this->last; //создаем переменную-указаетель и присваиваем ей указатель на послений в текущем стеке, который вызвал этот перегруженный оператор
+			Stack_element<T2>* tmp_comprasion_2 = tmp_stack.last; // временный становится последним
 			int i = size;
 			do
 			{
