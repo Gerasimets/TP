@@ -1,14 +1,14 @@
 #pragma once
-#include <iostream>
-#include <iomanip>
+#include "Stack_element.h"
+
 using namespace std;
 
-template <typename T2>
-struct Stack_element
-{
-	T2 value = 0; // значение элемента стека
-	Stack_element<T2>* prev = 0; // ссылка на предыдущий элемент стека
-};
+//template <typename T2>
+//struct Stack_element
+//{
+//	T2 value = 0; // значение элемента стека
+//	Stack_element<T2>* prev = 0; // ссылка на предыдущий элемент стека
+//};
 
 template <typename T2>
 class myStack
@@ -24,9 +24,9 @@ public:
 
 	};
 
-	myStack(int value) : size(0)// конструктор стека с параметром
+	myStack(int quantity) : size(0)// конструктор стека с параметром
 	{
-		for (int i = 0; i < value; i++)
+		for (int i = 0; i < quantity; i++)
 		{
 			this->push((130.0 + rand() % 56) / (2.0 + rand() % 2));
 		}
@@ -41,11 +41,11 @@ public:
 		system("cls");
 	};
 
-	void push(T2 value) // добавление элементов в конец стека
+	void push(T2 new_value) // добавление элементов в конец стека
 	{
 		Stack_element<T2>* new_element = new(Stack_element<T2>); // выделяем память под новый элемент ///////////////////////////////////////////////////
-		new_element->prev = last; // новый элемент будет ссылаться на последний
-		new_element->value = value; // изменяем значение нового элемента
+		new_element->set_prev(last)/*prev = last*/; // новый элемент будет ссылаться на последний
+		new_element->set_value(new_value)/*value = new_value*/; // изменяем значение нового элемента
 		last = new_element; // последний элемент изменился
 		size++; // добавили один элемент
 	};
@@ -53,7 +53,7 @@ public:
 	void pop() // извлекаем последний(головной) элемент из стека
 	{
 		T2 deleted_element = 0; // извлеченный элемент
-		deleted_element = last->value; //присваиваем значение последнего элемента 
+		deleted_element = last->get_value()/*value*/; //присваиваем значение последнего элемента 
 		if (size == 1) // если в стеке 1 элемент
 		{
 			delete last; // удаляем указатель на него
@@ -62,7 +62,7 @@ public:
 		else // если больше одного элемента
 		{
 			Stack_element<T2>* element_to_delete = last; // создаем переменную, которая будет идти от конца
-			last = last->prev; //в указатель на последний присваиваем предыдущий
+			last = last->get_prev()/*prev*/; //в указатель на последний присваиваем предыдущий
 			delete element_to_delete; //удаляем элемент
 			element_to_delete = nullptr;
 		}
@@ -84,12 +84,12 @@ public:
 			cout.setf(ios::fixed);
 
 			Stack_element<T2>* current = last; // создаем переменную, идем от конца к началу
-			while (current->prev != 0) // пока не дойдем до первого элемента
+			while (current->get_prev()/*prev*/ != 0) // пока не дойдем до первого элемента
 			{
-				cout << setprecision(4) << current->value << " <- "; // выводим значение текущего
-				current = current->prev; // идем к началу
+				cout << setprecision(4) << current->get_value()/*value*/ << " <- "; // выводим значение текущего
+				current = current->get_prev()/*prev*/; // идем к началу
 			}
-			cout << setprecision(4) << current->value << endl; // последний выводим отдельно
+			cout << setprecision(4) << current->get_value()/*value*/ << endl; // последний выводим отдельно
 			cout << resetiosflags(ios_base::floatfield);
 		}
 		catch (const char* ex)
@@ -111,8 +111,8 @@ public:
 
 		for (int i = tmp_stack.size - 1; i >= 0; i--)
 		{
-			tmp_mass_stack[i] = tmp_last->value; // записываем в масив с конца
-			tmp_last = tmp_last->prev; // временный идет от конца к началу
+			tmp_mass_stack[i] = tmp_last->get_value()/*value*/; // записываем в масив с конца
+			tmp_last = tmp_last->get_prev()/*prev*/; // временный идет от конца к началу
 		}
 
 		for (int i = 0; i < tmp_stack.size; i++)
@@ -134,13 +134,15 @@ public:
 		{
 			Stack_element<T2>* current_last_tmp = last; // указываем на конец текущего стека
 			Stack_element<T2>* current_last_tmp2 = Stack_tmp.last; // и на конец второго
-			while (current_last_tmp->prev != 0) // пока не дойдем до первого элемента
+			while (current_last_tmp->get_prev()/*prev*/ != 0) // пока не дойдем до первого элемента
 			{
-				current_last_tmp->value += current_last_tmp2->value; // прибавляем к значению текущей значение второй
-				current_last_tmp = current_last_tmp->prev; // двигаем к началу текущую
-				current_last_tmp2 = current_last_tmp2->prev; // двигаем к началу вторую
+				//current_last_tmp->value += current_last_tmp2->value; // прибавляем к значению текущей значение второй
+				current_last_tmp->set_value/*value*//* = */(current_last_tmp->get_value()/*value*/ + current_last_tmp2->get_value())/*value*/; // прибавляем к значению текущей значение второй
+				current_last_tmp = current_last_tmp->get_prev()/*prev*/; // двигаем к началу текущую
+				current_last_tmp2 = current_last_tmp2->get_prev()/*prev*/; // двигаем к началу вторую
 			}
-			current_last_tmp->value += current_last_tmp2->value; // к первому тоже прибавляем
+			//current_last_tmp->value += current_last_tmp2->value; // к первому тоже прибавляем
+			current_last_tmp->set_value/*value*/ /*=*/ (current_last_tmp->get_value()/*value*/ + current_last_tmp2->get_value())/*value*/; // к первому тоже прибавляем
 			cout << "Новый стек:" << endl; // выводим на экран
 			this->show();
 		}
@@ -156,13 +158,15 @@ public:
 		{
 			Stack_element<T2>* current_last_tmp = last; // указываем на конец текущего стека
 			Stack_element<T2>* current_last_tmp2 = Stack_tmp.last; // и на конец второй
-			while (current_last_tmp->prev != 0) // пока не дойдем до первого элемента
+			while (current_last_tmp->get_prev()/*prev*/ != 0) // пока не дойдем до первого элемента
 			{
-				current_last_tmp->value -= current_last_tmp2->value;
-				current_last_tmp = current_last_tmp->prev; // двигаем к началу текущую
-				current_last_tmp2 = current_last_tmp2->prev; // двигаем к началу вторую
+				//current_last_tmp->value -= current_last_tmp2->value;
+				current_last_tmp->set_value/*value*/ /*=*/ (current_last_tmp->get_value()/*value*/ - current_last_tmp2->get_value())/*value*/;
+				current_last_tmp = current_last_tmp->get_prev()/*prev*/; // двигаем к началу текущую
+				current_last_tmp2 = current_last_tmp2->get_prev()/*prev*/; // двигаем к началу вторую
 			}
-			current_last_tmp->value -= current_last_tmp2->value;
+			//current_last_tmp->value -= current_last_tmp2->value;
+			current_last_tmp->set_value/*value*/ /*=*/ (current_last_tmp->get_value()/*value*/ - current_last_tmp2->get_value())/*value*/;
 			cout << "Новый стек:" << endl; // выводим на экран
 			this->show();
 		}
@@ -183,7 +187,7 @@ public:
 			int i = size;
 			do
 			{
-				if (tmp_comprasion_1->value == tmp_comprasion_2->value)
+				if (tmp_comprasion_1->get_value()/*value*/ == tmp_comprasion_2->get_value()/*value*/)
 				{
 					i--;
 				}
@@ -192,8 +196,8 @@ public:
 					x = 0;
 					break;
 				}
-				tmp_comprasion_1 = tmp_comprasion_1->prev; //двигаемся по элементам
-				tmp_comprasion_2 = tmp_comprasion_2->prev;
+				tmp_comprasion_1 = tmp_comprasion_1->get_prev()/*prev*/; //двигаемся по элементам
+				tmp_comprasion_2 = tmp_comprasion_2->get_prev()/*prev*/;
 			} while (i != 0);
 		}
 
