@@ -1,7 +1,7 @@
-#include <iostream>
-#include <iomanip>
+//#include <iostream>
+//#include <iomanip>
 #include "myStack.h"
-#include <ctime>
+//#include <ctime>
 
 using namespace std;
 
@@ -74,7 +74,7 @@ void work_with_stack(T2* stack_ptr, T3 s)
 		case 1:
 			cout << "Введите новый элемент стека: ";
 			cin >> val;
-			stack_ptr[number_this_stack].push(val); //добавляем новый элемент 
+			stack_ptr[number_this_stack].push(val); // добавляем новый элемент
 			cout << "Элементы стека: ";
 			stack_ptr[number_this_stack].show();
 			system("pause");
@@ -202,7 +202,7 @@ void work_with_stack(T2* stack_ptr, T3 s)
 				}
 				else
 				{
-					number_this_stack = choise;  
+					number_this_stack = choise;
 					cout << "Переключение выполнено" << endl;
 					cout << "Стек № " << number_this_stack + 1 << " состоит из:" << endl;
 
@@ -394,6 +394,7 @@ int main()
 	float* mas2 = 0;
 	double* mas3 = 0;
 	char* mas4 = 0;
+	char**mas5 = 0;
 
 	int size; //размер массива
 
@@ -407,6 +408,7 @@ int main()
 		cout << "|2| - float" << endl;
 		cout << "|3| - double" << endl;
 		cout << "|4| - char" << endl;
+		cout << "|5| - char*" << endl;
 
 		cin >> menu_1;
 
@@ -418,7 +420,7 @@ int main()
 		case 1:
 			try
 			{
-				size = -60 + rand() % 119; //размер массива
+				size = -10 + rand() % 40; // размер массива
 				if (size <= 0)
 				{
 					throw "Размер созданного рандомно массива оказался меньше или равен нулю, выберите тип данных еще раз";
@@ -427,7 +429,7 @@ int main()
 
 				for (int i = 0; i < size; i++) //заполняем массив
 				{
-					mas1[i] = -30 + rand() % 59;
+					mas1[i] = -30 + rand() % 60;
 				}
 
 				inversion(mas1, size); //вызываем шаблонную функцию
@@ -443,7 +445,7 @@ int main()
 		case 2:
 			try
 			{
-				size = -60 + rand() % 119; //размер массива
+				size = -10 + rand() % 40; //размер массива
 				if (size <= 0)
 				{
 					throw "Размер созданного рандомно массива оказался меньше или равен нулю, выберите тип данных еще раз";
@@ -467,7 +469,7 @@ int main()
 		case 3:
 			try
 			{
-				size = -60 + rand() % 119; //размер массива
+				size = -10 + rand() % 40; //размер массива
 				if (size <= 0)
 				{
 					throw "Размер созданного рандомно массива оказадся меньше или равен нулю, выберите тип данных еще раз";
@@ -491,7 +493,7 @@ int main()
 		case 4:
 			try
 			{
-				size = -60 + rand() % 119; //размер массива
+				size = -10 + rand() % 40; //размер массива
 				if (size <= 0)
 				{
 					throw "Размер созданного рандомно массива оказадся меньше или равен нулю, выберите тип данных еще раз";
@@ -505,6 +507,44 @@ int main()
 
 				inversion(mas4, size);
 				delete[] mas4;
+			}
+			catch (const char* ex)
+			{
+				cout << ex << endl;
+				system("pause");
+			}
+			break;
+
+		case 5:
+			try
+			{
+				size = -10 + rand() % 40; //размер массива
+				if (size <= 0)
+				{
+					throw "Размер созданного рандомно массива оказадся меньше или равен нулю, выберите тип данных еще раз";
+				}
+				mas5 = new char*[size]; //выделяем память под массив размером с задданный рандомом
+
+				for (int i = 0; i < size; i++) // заполняем массив
+				{
+					int j;
+					int size_str = 2 + rand() % 30;
+					mas5[i] = new char[size_str];
+					for (j = 0; j < size_str; j++)
+					{
+						mas5[i][j] = 65 + rand() % 56;
+						//mas5[i] = 0 + rand() % 30;
+					}
+					mas5[i][--j] = '\0'; //
+				}
+				
+				inversion(mas5, size);
+
+				for (int i = 0; i < size; i++)
+				{
+					delete[] mas5[i];
+				}
+				delete[] mas5;
 			}
 			catch (const char* ex)
 			{
@@ -528,6 +568,8 @@ int main()
 	double x3 = 0;
 	myStack<char>* stack4 = 0;
 	char x4 = 0;
+
+
 
 	int menu_2 = 1;
 
