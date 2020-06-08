@@ -1,7 +1,5 @@
-//#include <iostream>
-//#include <iomanip>
 #include "myStack.h"
-//#include <ctime>
+#include "myStack_ch.h"
 
 using namespace std;
 
@@ -43,8 +41,8 @@ void work_with_stack(T2* stack_ptr, T3 s)
 	int menu2 = 1; // выбор пользователя в меню второго задания
 	int all_stack = 1; // общее количество стеков или индекс последней созданной
 	int number_this_stack = 0; // номер текущего стека
-	T2* stack_tmp; //временный массив стеков
-	T3 val; //значение
+	T2* stack_tmp; // временный массив стеков
+	T3 val = 0; // значение
 	int choise; // номер выбранного пользователем стека
 
 	while (menu2)
@@ -73,8 +71,10 @@ void work_with_stack(T2* stack_ptr, T3 s)
 
 		case 1:
 			cout << "Введите новый элемент стека: ";
+
 			cin >> val;
 			stack_ptr[number_this_stack].push(val); // добавляем новый элемент
+			
 			cout << "Элементы стека: ";
 			stack_ptr[number_this_stack].show();
 			system("pause");
@@ -322,8 +322,389 @@ void work_with_stack(T2* stack_ptr, T3 s)
 
 				stack_ptr[number_this_stack] = stack_ptr[choise]; //в текущий стек кладем(присваиваем) выбранный, перегруженное =
 
-				/*cout << "Выбранный стек состоит из: ";
-				stack_ptr[choise].show();*/
+				cout << "Текущий стек после изменений: ";
+				stack_ptr[number_this_stack].show();
+			}
+			catch (const char* ex)
+			{
+				cout << ex << endl;
+			}
+			system("pause");
+			break;
+
+		case 10:
+			try
+			{
+				if (all_stack == 1)
+				{
+					throw "Существует только один стек";
+				}
+
+				cout << "Выберете стек, с которым хотите сравнить (от 1 до " << all_stack << ")" << endl;
+				cout << "(кроме " << number_this_stack + 1 << ", так как вы сейчас с ним работаете)" << endl;
+
+				for (int i = 0; i < all_stack; i++) // выводим все стеки на экран
+				{
+					cout << "Стек № " << i + 1 << " состоит из:" << endl;
+					stack_ptr[i].show();
+				}
+
+				cout << "Какой стек выбираете?" << endl;;
+				cin >> choise;
+				choise--; //( допустим для пользователя это 2 стек, а для программы 1, поэтому -- для корректной работы)
+
+				if ((choise < 0) || (choise == number_this_stack) || (choise >= all_stack)) //выбранный стек не должен быть меньше 0, равняься текущему(с которым работает пользователь,
+																							//не должен быть больше или равен количеству всех стеков(кол-во стеков 2, то есть это 0 и 1)
+				{
+					cout << "Некорректное значение. Сравнение не произведено" << endl;
+					system("pause");
+					break;
+				}
+
+				stack_ptr[number_this_stack] == stack_ptr[choise]; //сравниваем, вызывается перегруженный ==
+			}
+			catch (const char* ex)
+			{
+				cout << ex << endl;
+			}
+			system("pause");
+			break;
+
+		default:
+			cout << "некорректный ввод" << endl;
+			system("pause");
+			break;
+		}
+	}
+}
+
+void work_with_stack_ch(myStack_ch* stack_ptr, char* s)
+{
+	int S;
+	cout << "Введите размер стека: ";
+	cin >> S;
+	myStack_ch first_stack(S); //создаем новый объект, используя конструктор с параметром
+	stack_ptr = new myStack_ch[1]; //выделяем память под стек [1] - размер стека
+	stack_ptr[0] = first_stack; // в нулевую ячейку кледем наш первый стек
+	int menu2 = 1; // выбор пользователя в меню второго задания
+	int all_stack = 1; // общее количество стеков или индекс последней созданной
+	int number_this_stack = 0; // номер текущего стека
+	myStack_ch* stack_tmp; // временный массив стеков
+	char* val_ch = 0; // строка
+	char* val_ch_tmp = 0; // временная строка
+	int choise; // номер выбранного пользователем стека
+
+	int ind = 0;
+	char ch = 0;
+
+	while (menu2)
+	{
+		system("cls");
+		cout << "Используется стек № " << number_this_stack + 1 << endl;
+		cout << "| 0| - Выбрать другой тип данных" << endl;
+		cout << "| 1| - Добавление элемента к текущему стеку" << endl;
+		cout << "| 2| - Извлечение элемента из текущего стека" << endl;
+		cout << "| 3| - Вывод текущего стека на экран" << endl;
+		cout << "| 4| - Создание нового стека и переключение на него" << endl;
+		cout << "| 5| - Вывод всех стеков" << endl;
+		cout << "| 6| - Выбор другого стека" << endl;
+		cout << "| 7| - Сложить два стека" << endl;
+		cout << "| 8| - Вычесть из одного стека другой" << endl;
+		cout << "| 9| - Присвоить один стек к другому" << endl;
+		cout << "|10| - Сравнение двух стеков" << endl;
+		cin >> menu2;
+		//system("cls");
+
+		switch (menu2)
+		{
+		case 0:
+			delete[] stack_ptr;
+			break;
+
+		case 1:
+			ind = 0;
+			cout << "Введите новый элемент стека: ";
+
+			cin.get(ch); // ловим предыдущий символ
+			cin.get(ch); // считываем новый символ
+			val_ch = new char[1]; // выделяем память под \0
+			
+			while (ch != '\n')
+			{
+				val_ch_tmp = new char[ind]; // выделяем память под текущее количество элементов
+				for (int j = 0; j < ind; j++)
+				{
+					val_ch_tmp[j] = val_ch[j];
+				}
+				val_ch = new char[ind + 2]; // выделяем память под новый элемент плюс под \0
+				for (int j = 0; j < ind; j++)
+				{
+					val_ch[j] = val_ch_tmp[j];
+				}
+				val_ch[ind] = ch;
+				ind++;
+				cin.get(ch);
+			}
+			val_ch[ind] = '\0';
+			
+			delete[] val_ch_tmp;
+			stack_ptr[number_this_stack].push_ch(val_ch); // добавляем новый элемент
+
+			cout << "Элементы стека: ";
+			stack_ptr[number_this_stack].show();
+			system("pause");
+			break;
+
+		case 2:
+			try
+			{
+				if (stack_ptr[number_this_stack].empty() == 0)
+				{
+					throw "Невозможно извлечь элемент из пустого стека";
+				}
+				stack_ptr[number_this_stack].pop();
+				cout << "Элементы стека: ";
+				stack_ptr[number_this_stack].show();
+			}
+			catch (const char* ex)
+			{
+				cout << ex << endl;
+			}
+
+			system("pause");
+			break;
+
+		case 3:
+			cout << "Используется стек № " << number_this_stack + 1 << endl;
+			cout << "Элементы стека: ";
+			stack_ptr[number_this_stack].show();
+			system("pause");
+			break;
+
+		case 4:
+			try
+			{
+				for (int i = 0; i < all_stack; i++)
+				{
+					if (stack_ptr[i].empty() == 0)
+					{
+						throw i;
+					}
+				}
+
+				number_this_stack = all_stack; // текущий стек будет равен номеру всех стеков (допустим кол-во стеков 1, номер текущего был 0, теперь станет 1)
+				cout << "Переключение на новый стек выполнено" << endl;
+
+				stack_tmp = new myStack_ch[all_stack]; // создаем временный массив стеков размером с количество имеющихся стеков
+
+				for (int i = 0; i < all_stack; i++) // копируем все стеки во временный массив
+				{
+					stack_tmp[i] = stack_ptr[i];
+				}
+
+				delete[] stack_ptr;
+
+				stack_ptr = new myStack_ch[++all_stack]; // выделяем память в старом массиве стеков под новое количество стеков
+
+				for (int i = 0; i < all_stack - 1; i++) // копируем все стеки из временного массива стеков в старый массив стеков
+				{
+					stack_ptr[i] = stack_tmp[i];
+				}
+
+				delete[] stack_tmp; // временный больше не нужен
+
+				cout << "Введите размер нового стека: ";
+				cin >> S;
+
+				for (int i = 0; i < S; i++)
+				{
+					int size_str = (2 + rand() % 10);
+
+					val_ch = new char[size_str];
+					for (int j = 0; j < size_str; j++)
+					{
+
+						val_ch[j] = 65 + rand() % 56;
+					}
+					val_ch[size_str - 1] = '\0';
+					stack_ptr[number_this_stack].push_ch(val_ch);
+				}
+
+				cout << "Номер текущего стека: " << number_this_stack + 1 << endl;
+				cout << "Элементы стека: ";
+				stack_ptr[number_this_stack].show();
+			}
+			catch (const int i)
+			{
+				cout << "Стек под номером " << i + 1 << " пуст, продолжите работу в нем" << endl;
+				number_this_stack = i;
+
+				for (int i = 0; i < all_stack; i++) // выводим все стеки на экран
+				{
+					cout << "Стек № " << i + 1 << " состоит из:" << endl;
+					stack_ptr[i].show();
+				}
+			}
+			system("pause");
+			break;
+
+		case 5:
+			for (int i = 0; i < all_stack; i++) // выводим все стеки на экран
+			{
+				cout << "Стек № " << i + 1 << " состоит из:" << endl;
+				stack_ptr[i].show();
+			}
+			system("pause");
+			break;
+
+		case 6:
+			try
+			{
+				if (all_stack == 1)
+				{
+					throw "Существует только один стек";
+				}
+
+				cout << "Выберете стек, с которым хотите работать (от 1 до " << all_stack << ")" << endl;
+				cout << "(кроме " << number_this_stack + 1 << ", так как вы сейчас с ним работаете)" << endl;
+
+				for (int i = 0; i < all_stack; i++) // выводим все стеки на экран
+				{
+					cout << "Стек № " << i + 1 << " состоит из:" << endl;
+					stack_ptr[i].show();
+				}
+
+				cout << "Какой стек выбираете?" << endl;
+				cin >> choise;
+				system("cls");
+				choise--; //( допустим для пользователя это 2 стек, а для программы 1, поэтому -- для корректной работы)
+
+				if ((choise < 0) || (choise == number_this_stack) || (choise >= all_stack)) //выбранный стек не должен быть меньше 0, равняься текущему(с которым работает пользователь,
+																							//не должен быть больше или равен количеству всех стеков(кол-во стеков 2, то есть это 0 и 1)
+				{
+					cout << "Некорректное значение. Переключение не выполнено" << endl;
+				}
+				else
+				{
+					number_this_stack = choise;
+					cout << "Переключение выполнено" << endl;
+					cout << "Стек № " << number_this_stack + 1 << " состоит из:" << endl;
+
+					stack_ptr[number_this_stack].show();
+				}
+			}
+			catch (const char* ex)
+			{
+				cout << ex << endl;
+			}
+
+			system("pause");
+			break;
+
+		case 7:
+			try
+			{
+				if (all_stack == 1)
+				{
+					throw "Существует только один стек";
+				}
+
+				cout << "Выберете стек, с которым хотите произвести сложение (от 1 до " << all_stack << ")" << endl;
+				cout << "(кроме " << number_this_stack + 1 << ", так как вы сейчас с ним работаете)" << endl;
+				for (int i = 0; i < all_stack; i++) // выводим все стеки на экран
+				{
+					cout << "Стек № " << i + 1 << " состоит из:" << endl;
+					stack_ptr[i].show();
+				}
+
+				cout << "Какой стек выбираете?" << endl;
+				cin >> choise;
+				choise--; //( допустим для пользователя это 2 стек, а для программы 1, поэтому -- для корректной работы)
+
+				if ((choise < 0) || (choise == number_this_stack) || (choise >= all_stack)) //выбранный стек не должен быть меньше 0, равняься текущему(с которым работает пользователь,
+																							//не должен быть больше или равен количеству всех стеков(кол-во стеков 2, то есть это 0 и 1)
+				{
+					cout << "Некорректное значение. Сложение не произведено" << endl;
+					system("pause");
+					break;
+				}
+				stack_ptr[number_this_stack] + stack_ptr[choise]; //складываем стеки, вызываем перегруженный +
+			}
+			catch (const char* ex)
+			{
+				cout << ex << endl;
+			}
+			system("pause");
+			break;
+
+		case 8:
+			try
+			{
+				if (all_stack == 1)
+				{
+					throw "Существует только один стек";
+				}
+
+				cout << "Выберете стек, который хотите вычесть (от 1 до " << all_stack << ")" << endl;
+				cout << "(кроме " << number_this_stack + 1 << ", так как вы сейчас с ним работаете)" << endl;
+
+				for (int i = 0; i < all_stack; i++) // выводим все стеки на экран
+				{
+					cout << "Стек № " << i + 1 << " состоит из:" << endl;
+					stack_ptr[i].show();
+				}
+
+				cout << "Какой стек выбираете?" << endl;;
+				cin >> choise;
+				choise--; //( допустим для пользователя это 2 стек, а для программы 1, поэтому -- для корректной работы)
+
+				if ((choise < 0) || (choise == number_this_stack) || (choise >= all_stack)) //выбранный стек не должен быть меньше 0, равняься текущему(с которым работает пользователь,
+																							//не должен быть больше или равен количеству всех стеков(кол-во стеков 2, то есть это 0 и 1)
+				{
+					cout << "Некорректное значение. Вычитание не произведено" << endl;
+					system("pause");
+					break;
+				}
+				stack_ptr[number_this_stack] - stack_ptr[choise]; // вычитаем стеки, перегруженный -
+			}
+			catch (const char* ex)
+			{
+				cout << ex << endl;
+			}
+			system("pause");
+			break;
+
+		case 9:
+			try
+			{
+				if (all_stack == 1)
+				{
+					throw "Существует только один стек";
+				}
+
+				cout << "Выберете стек, который хотите присвоить (от 1 до " << all_stack << ")" << endl;
+				cout << "(кроме " << number_this_stack + 1 << ", так как вы сейчас с ним работаете)" << endl;
+
+				for (int i = 0; i < all_stack; i++) // выводим все стеки на экран
+				{
+					cout << "Стек № " << i + 1 << " состоит из:" << endl;
+					stack_ptr[i].show();
+				}
+
+				cout << "Какой стек выбираете?" << endl;;
+				cin >> choise;
+				cout << "Стеку №" << number_this_stack + 1 << " будет присвоен стек №" << choise << endl;
+				choise--; //( допустим для пользователя это 2 стек, а для программы 1, поэтому -- для корректной работы)
+
+				if ((choise < 0) || (choise == number_this_stack) || (choise >= all_stack)) //выбранный стек не должен быть меньше 0, равняься текущему(с которым работает пользователь,
+																							//не должен быть больше или равен количеству всех стеков(кол-во стеков 2, то есть это 0 и 1)
+				{
+					cout << "Некорректное значение. Вычитание не произведено" << endl;
+					system("pause");
+					break;
+				}
+
+				stack_ptr[number_this_stack] = stack_ptr[choise]; //в текущий стек кладем(присваиваем) выбранный, перегруженное =
 
 				cout << "Текущий стек после изменений: ";
 				stack_ptr[number_this_stack].show();
@@ -568,8 +949,8 @@ int main()
 	double x3 = 0;
 	myStack<char>* stack4 = 0;
 	char x4 = 0;
-
-
+	myStack_ch* stack5 = 0;
+	char* x5 = 0;
 
 	int menu_2 = 1;
 
@@ -583,6 +964,7 @@ int main()
 		cout << "|2| - float" << endl;
 		cout << "|3| - double" << endl;
 		cout << "|4| - char" << endl;
+		cout << "|5| - char*" << endl;
 
 		cin >> menu_2;
 
@@ -605,6 +987,10 @@ int main()
 
 		case 4:
 			work_with_stack(stack4, x4);
+			break;
+
+		case 5:
+			work_with_stack_ch(stack5, x5);
 			break;
 
 		default:
