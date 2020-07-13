@@ -5,6 +5,11 @@ using namespace std;
 
 void all_elements(int* mass_number, int P, int N, int M)
 {
+    /*__asm
+    {
+
+    }*/
+
     int quantity_0 = (P * N * M) / 100; // количество 0 в каждой матрице
 
     for (int i = 0; i < N * M; i++) // заполняем массив элементов
@@ -23,19 +28,19 @@ void all_elements(int* mass_number, int P, int N, int M)
 
 void creator(int*** array, int*** array_copy, int K, int N, int M)
 {
-    for (int i = 0; i < K; i++)
+    for (int i = 0; i < K; i++) // i - индекс текущей матрицы
     {
-        array[i] = new int* [N]; // выделение памяти под N строк
-        array_copy[i] = new int* [N]; // выделение памяти под N строк
+        array[i] = new int* [N]; // выделение памяти под N строк в каждой матрице
+        array_copy[i] = new int* [N]; // выделение памяти под N строк в каждой матрице
         for (int j = 0; j < N; j++)
         {
-            array[i][j] = new int[M]; // выделение памяти под M столбцов
-            array_copy[i][j] = new int[M]; // выделение памяти под M столбцов
+            array[i][j] = new int[M]; // выделение памяти под M столбцов в каждой матрице
+            array_copy[i][j] = new int[M]; // выделение памяти под M столбцов в каждой матрице
         }
     }
 }
 
-void zeros_finder(int& counter, int*** array_copy, int& tek, int& i, int& j, int& k, int M, int N)
+void zeros_finder(int*** array_copy, int& tek, int& i, int& j, int& k, int M, int N)
 {
     if (j != 0) // смотрим сверху
     {
@@ -44,12 +49,9 @@ void zeros_finder(int& counter, int*** array_copy, int& tek, int& i, int& j, int
             array_copy[i][j - 1][k] = 1;
 
             tek++;
-            if (tek > counter)
-            {
-                counter = tek;
-            }
-            int js = j - 1;
-            zeros_finder(counter, array_copy, tek, i, js, k, M, N);
+            
+            int new_j = j - 1;
+            zeros_finder(array_copy, tek, i, new_j, k, M, N);
         }
     }
 
@@ -60,12 +62,9 @@ void zeros_finder(int& counter, int*** array_copy, int& tek, int& i, int& j, int
             array_copy[i][j][k + 1] = 1;
 
             tek++;
-            if (tek > counter)
-            {
-                counter = tek;
-            }
-            int ks = k + 1;
-            zeros_finder(counter, array_copy, tek, i, j, ks, M, N);
+            
+            int new_k = k + 1;
+            zeros_finder(array_copy, tek, i, j, new_k, M, N);
         }
     }
 
@@ -76,12 +75,9 @@ void zeros_finder(int& counter, int*** array_copy, int& tek, int& i, int& j, int
             array_copy[i][j + 1][k] = 1;
 
             tek++;
-            if (tek > counter)
-            {
-                counter = tek;
-            }
-            int js = j + 1;
-            zeros_finder(counter, array_copy, tek, i, js, k, M, N);
+            
+            int new_j = j + 1;
+            zeros_finder(array_copy, tek, i, new_j, k, M, N);
         }
     }
 
@@ -92,12 +88,9 @@ void zeros_finder(int& counter, int*** array_copy, int& tek, int& i, int& j, int
             array_copy[i][j][k - 1] = 1;
 
             tek++;
-            if (tek > counter)
-            {
-                counter = tek;
-            }
-            int ks = k - 1;
-            zeros_finder(counter, array_copy, tek, i, j, ks, M, N);
+        
+            int new_k = k - 1;
+            zeros_finder(array_copy, tek, i, j, new_k, M, N);
         }
     }
 }
@@ -106,43 +99,41 @@ void result(int ***array_copy, int i, int N, int M) // после подсчет
 {
     ofstream fout("gera_test.txt", ios_base::app);
 
-    int counter = 0; // максимальное количество прилегающих нулей
-    int tek = 0;
+    int max_cnt = 0; // максимальное количество прилегающих нулей
+
     for (int j = 0; j < N; j++)
     {
         for (int k = 0; k < M; k++)
         {
-            if (array_copy[i][j][k] == 0)
+            if (array_copy[i][j][k] == 0) // нашли новую кучку
             {
-                array_copy[i][j][k] = 1;
+                int tek = 1; // количество нулей в текущей кучке
 
-                tek++;
-                if (tek > counter)
+                array_copy[i][j][k] = 1; // чтобы больше не считать этот ноль заменяем его на 1
+
+                zeros_finder(array_copy, tek, i, j, k, M, N); // вызываем рекурсивную функцию, которая проверит есть ли вокруг этого нуля другие
+                if (tek > max_cnt) // если в текущей кучке нулей больше чем в максимальной кучке до этого...
                 {
-                    counter = tek;
+                    max_cnt = tek; // текущая кучка становится максимальной
                 }
-
-                zeros_finder(counter, array_copy, tek, i, j, k, M, N);
-
-                tek = 0;
             }
         }
     }
 
-    if (counter == 1)
+    if (max_cnt == 1)
     {
         cout << "нет примыкающих друг к другу нулей" << endl << endl; // кончилась матрица выводим второй enter на экран
         fout << "нет примыкающих друг к другу нулей" << endl << endl; // кончилась матрица выводим второй enter в файл
     }
-    else if (counter == 0)
+    else if (max_cnt == 0)
     {
         cout << "матрица состоит только из единиц" << endl << endl; // кончилась матрица выводим второй enter на экран
         fout << "матрица состоит только из единиц" << endl << endl; // кончилась матрица выводим второй enter в файл
     }
     else
     {
-        cout << "максимальное количество нулей примыкающих друг к другу = " << counter << endl << endl; // кончилась матрица выводим второй enter на экран
-        fout << "максимальное количество нулей примыкающих друг к другу = " << counter << endl << endl; // кончилась матрица выводим второй enter в файл
+        cout << "максимальное количество нулей примыкающих друг к другу = " << max_cnt << endl << endl; // кончилась матрица выводим второй enter на экран
+        fout << "максимальное количество нулей примыкающих друг к другу = " << max_cnt << endl << endl; // кончилась матрица выводим второй enter в файл
     }
 }
 
@@ -160,12 +151,11 @@ void filling(int ***array, int ***array_copy, int* mass_number, int K, int N, in
         {
             int* mass_index = new int[N * M]; // массив используемых индексов...
 
-            int ind; // индекс массива индексов
-            for (ind = 0; ind < N * M; ind++) // заполняем...
+            for (int i = 0; i < N * M; i++) // заполняем...
             {
-                mass_index[ind] = -1; // отрицательным значением чтобы не перепутать с индексом
+                mass_index[i] = -1; // отрицательным значением чтобы не перепутать с индексом
             }
-            ind = 0;
+            int ind = 0; // индекс массива индексов
 
             for (int j = 0; j < N; j++)
             {
@@ -178,7 +168,7 @@ void filling(int ***array, int ***array_copy, int* mass_number, int K, int N, in
                         error = 0; // сбрасываем признак ошибки
                         index = 0 + rand() % (N * M); // генерим случайное значение
 
-                        for (int i = 0; i < N * M; i++) // пробигаем по всему массиву индексов
+                        for (int i = 0; i < N * M && mass_index[i] != -1; i++) // пробигаем по всему массиву индексов
                         {
                             if (mass_index[i] == index) // если окажется, что случайный индекс уже встречался...
                             {
@@ -254,11 +244,16 @@ int main()
     int*** array_copy = new int** [K]; // копия массива всех матриц
     creator(array, array_copy, K, N, M); // выделяем память под все матрицы и под их копии
 
-    filling(array, array_copy, mass_number, K, N, M, P); // заполнение матриц рандомными значениями, а также вывод на экран и в файл
-    
+    filling(array, array_copy, mass_number, K, N, M, P); // заполнение матриц рандомными значениями, а также вывод на экран и в файл вместе с значением нулей
+
     delete[] mass_number; // удаляем массив элементов, так как все матрицы уже заполнены
 
     deliter(array, array_copy, K, N); // удаление массива и его копии
+
+     // чтение из файла
+        // ввод матрицы в результирующий файл
+        // подсчет количества нулей
+        // вывод количества нулей
 
     return 0;
 }
