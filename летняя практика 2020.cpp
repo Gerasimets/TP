@@ -1,6 +1,7 @@
 #include <iostream>
 #include <ctime>
 #include <fstream>
+
 using namespace std;
 
 void all_elements(int* mass_number, int P, int N, int M)
@@ -97,7 +98,7 @@ void zeros_finder(int*** array_copy, int& tek, int& i, int& j, int& k, int M, in
 
 void result(int ***array_copy, int i, int N, int M) // после подсчета искомых нулей выведет результат под матрицей
 {
-    ofstream fout("gera_test.txt", ios_base::app);
+    ofstream fout1("gera_test.txt", ios_base::app);
 
     int max_cnt = 0; // максимальное количество прилегающих нулей
 
@@ -123,23 +124,24 @@ void result(int ***array_copy, int i, int N, int M) // после подсчет
     if (max_cnt == 1)
     {
         cout << "нет примыкающих друг к другу нулей" << endl << endl; // кончилась матрица выводим второй enter на экран
-        fout << "нет примыкающих друг к другу нулей" << endl << endl; // кончилась матрица выводим второй enter в файл
+        fout1 << "нет примыкающих друг к другу нулей" << endl << endl; // кончилась матрица выводим второй enter в файл
     }
     else if (max_cnt == 0)
     {
         cout << "матрица состоит только из единиц" << endl << endl; // кончилась матрица выводим второй enter на экран
-        fout << "матрица состоит только из единиц" << endl << endl; // кончилась матрица выводим второй enter в файл
+        fout1 << "матрица состоит только из единиц" << endl << endl; // кончилась матрица выводим второй enter в файл
     }
     else
     {
         cout << "максимальное количество нулей примыкающих друг к другу = " << max_cnt << endl << endl; // кончилась матрица выводим второй enter на экран
-        fout << "максимальное количество нулей примыкающих друг к другу = " << max_cnt << endl << endl; // кончилась матрица выводим второй enter в файл
+        fout1 << "максимальное количество нулей примыкающих друг к другу = " << max_cnt << endl << endl; // кончилась матрица выводим второй enter в файл
     }
 }
 
 void filling(int ***array, int ***array_copy, int* mass_number, int K, int N, int M, int P)
 {
-    ofstream fout("gera_test.txt", ios_base::app);
+    ofstream fout;
+    fout.open("gera_test.txt", ios_base::app);
     if (!fout.is_open())
     {
         cout << "Файл не может быть открыт!" << endl;
@@ -157,16 +159,21 @@ void filling(int ***array, int ***array_copy, int* mass_number, int K, int N, in
             }
             int ind = 0; // индекс массива индексов
 
+            int left = 0;
+            int right = N * M - 1;
+            int right_value = 0;
+
             for (int j = 0; j < N; j++)
             {
                 for (int k = 0; k < M; k++)
                 {
+                    
                     int error; // признак того, что случайный индекс уже был использован
                     int index; // индекс массива всех возможных элементов матриц
                     do
                     {
                         error = 0; // сбрасываем признак ошибки
-                        index = 0 + rand() % (N * M); // генерим случайное значение
+                        index = left + rand() % ((N * M) - left - right_value); // генерим случайное значение
 
                         for (int i = 0; i < N * M && mass_index[i] != -1; i++) // пробигаем по всему массиву индексов
                         {
@@ -177,6 +184,46 @@ void filling(int ***array, int ***array_copy, int* mass_number, int K, int N, in
                             }
                         }
                     } while (error == 1); // будем повторять пока не найдем уникальный индекс
+                    
+                    int flag;
+                    if (index == left && left != right)
+                    {
+                        left++;
+                        
+                        do
+                        {
+                            flag = 0;
+                            for (int i = 0; i < N * M && mass_index[i] != -1; i++) // пробигаем по всему массиву индексов
+                            {
+                                if (mass_index[i] == left) // 
+                                {
+                                    left++;
+                                    flag = 1;
+                                    break;
+                                }
+                            }
+                        } while (flag != 0);
+                    }
+
+                    if (index == right && left != right)
+                    {
+                        right--;
+                        right_value++;
+                        do
+                        {
+                            flag = 0;
+                            for (int i = 0; i < N * M && mass_index[i] != -1; i++) // пробигаем по всему массиву индексов
+                            {
+                                if (mass_index[i] == right) // 
+                                {
+                                    right--;
+                                    right_value++;
+                                    flag = 1;
+                                    break;
+                                }
+                            }
+                        } while (flag != 0);
+                    }
 
                     mass_index[ind++] = index; // так как этот индекс ни разу не встречался - запоминаем его
 
@@ -224,6 +271,17 @@ int main()
     int K; // количество исходных матриц
     int P; // процент нулей
 
+    ofstream fout;
+    fout.open("gera_test.txt", ios_base::trunc);
+    if (!fout.is_open())
+    {
+        cout << "Файл не может быть открыт!" << endl;
+    }
+    else
+    {
+        fout.close();
+    }
+
     cout << "Введите K (количество исходных матриц) ";
     cin >> K;
 
@@ -249,6 +307,8 @@ int main()
     delete[] mass_number; // удаляем массив элементов, так как все матрицы уже заполнены
 
     deliter(array, array_copy, K, N); // удаление массива и его копии
+
+
 
      // чтение из файла
         // ввод матрицы в результирующий файл
