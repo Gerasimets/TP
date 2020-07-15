@@ -6,12 +6,46 @@ using namespace std;
 
 void all_elements(int* mass_number, int P, int N, int M)
 {
-    /*__asm
+    __asm
     {
+        mov eax, P // вставляем P
+        mul N // домножаем P на N
+        mul M // P * N * M
+        mov ebx, 100 // вставляем 100
+        div ebx // P * N * M / 100
+        mov ebx, eax // теперь в ebx находится quantity_0
 
-    }*/
+        mov eax, N // вставляем N
+        mul M // домножаем на M
+        mov edx, eax // теперь в edx находится N * M (количество элементов)
 
-    int quantity_0 = (P * N * M) / 100; // количество 0 в каждой матрице
+        xor ecx, ecx // обнуляем ecx
+        mov esi, mass_number // в esi теперь адресс массива mass_number
+
+        start: // заполнение текущего элемента массива
+        cmp ecx, edx // сравниваем счетчик с количеством элементов
+        je End // если они равны, значит мы прошли все элементы
+        cmp ebx, 0 // если не равны, сравниваем счетчик нулей с нулем
+        je one // если счетчик нулей равен нулю переходим на one
+
+        xor eax, eax // обнуляем eax
+        mov [esi], eax // кладем 0 в текущий элемент массива
+        dec ebx // уменьшаем счетчик нулей
+        jmp finish // переходим на finish
+
+        one: // заполнение текущего эдемента массива единицей
+        mov eax, 1 // вставляем 1
+        mov [esi], eax // текущий элемент массива равен 1
+
+        finish: // в конце любого заполнения...
+        add esi, 4 // увеличиваем адресс текущего элемента на 4, так как у нас int
+        inc ecx // увеличиваем счетчик, так как заполнили новый элемент
+        jmp start // возвращаемся чтобы заполнить следующий элемент
+
+        End: // все элементы заполнены
+    }
+
+    /*int quantity_0 = (P * N * M) / 100; // количество 0 в каждой матрице
 
     for (int i = 0; i < N * M; i++) // заполняем массив элементов
     {
@@ -24,7 +58,7 @@ void all_elements(int* mass_number, int P, int N, int M)
         {
             mass_number[i] = 1; // остальное заполняем единицами
         }
-    }
+    }*/
 }
 
 void creator(int*** array, int*** array_copy, int K, int N, int M)
@@ -159,21 +193,20 @@ void filling(int ***array, int ***array_copy, int* mass_number, int K, int N, in
             }
             int ind = 0; // индекс массива индексов
 
-            int left = 0;
-            int right = N * M - 1;
-            int right_value = 0;
+            int left = 0; // левая граница массива элементов
+            int right = N * M - 1; // правая граница массива элементов
 
             for (int j = 0; j < N; j++)
             {
                 for (int k = 0; k < M; k++)
                 {
-                    
                     int error; // признак того, что случайный индекс уже был использован
                     int index; // индекс массива всех возможных элементов матриц
                     do
                     {
                         error = 0; // сбрасываем признак ошибки
-                        index = left + rand() % ((N * M) - left - right_value); // генерим случайное значение
+
+                        index = left + rand() % (right - left + 1); // генерим случайное значение учитывая границы (+1, так как right это индекс)
 
                         for (int i = 0; i < N * M && mass_index[i] != -1; i++) // пробигаем по всему массиву индексов
                         {
@@ -185,44 +218,41 @@ void filling(int ***array, int ***array_copy, int* mass_number, int K, int N, in
                         }
                     } while (error == 1); // будем повторять пока не найдем уникальный индекс
                     
-                    int flag;
-                    if (index == left && left != right)
+                    int flag; // признак того, что граница была найдена
+                    if (index == left && left != right) // если рандомное число совпадает с левой границей...
                     {
-                        left++;
-                        
+                        left++; // левая граница меняется
                         do
                         {
-                            flag = 0;
-                            for (int i = 0; i < N * M && mass_index[i] != -1; i++) // пробигаем по всему массиву индексов
+                            flag = 0; // сбрасываем флаг
+                            for (int i = 0; i < N * M && mass_index[i] != -1; i++) // смотрим во всем массиве...
                             {
-                                if (mass_index[i] == left) // 
+                                if (mass_index[i] == left) // есть ли там новая левая граница
                                 {
-                                    left++;
-                                    flag = 1;
-                                    break;
+                                    left++; // если есть, то левая граница меняется
+                                    flag = 1; // флаг поднимается
+                                    break; // нет смысла продолжать цикл
                                 }
                             }
-                        } while (flag != 0);
+                        } while (flag != 0); // если граница поменялась, то надо проверить опять
                     }
 
-                    if (index == right && left != right)
+                    if (index == right && left != right) // если рандомное число совпало с правой границей
                     {
-                        right--;
-                        right_value++;
+                        right--; // двигаем правую границу
                         do
                         {
-                            flag = 0;
+                            flag = 0; // сбрасываем флаг
                             for (int i = 0; i < N * M && mass_index[i] != -1; i++) // пробигаем по всему массиву индексов
                             {
-                                if (mass_index[i] == right) // 
+                                if (mass_index[i] == right) // если нашли правую границу
                                 {
-                                    right--;
-                                    right_value++;
-                                    flag = 1;
-                                    break;
+                                    right--; // двигаем ее
+                                    flag = 1; // флаг поднимаем
+                                    break; // граница изменилась, надо пройти цикл заного
                                 }
                             }
-                        } while (flag != 0);
+                        } while (flag != 0); // пока не окажется что граница не менялась
                     }
 
                     mass_index[ind++] = index; // так как этот индекс ни разу не встречался - запоминаем его
@@ -280,35 +310,33 @@ int main()
     else
     {
         fout.close();
+
+        cout << "Введите K (количество исходных матриц) ";
+        cin >> K;
+
+        cout << "Введите N (количество строк) ";
+        cin >> N;
+
+        cout << "Введите M (количество столбцов) ";
+        cin >> M;
+
+        cout << "Введите процент нулей ";
+        cin >> P;
+        cout << endl;
+
+        int* mass_number = new int[N * M]; // массив в котором храняться все возможные элементы матриц
+        all_elements(mass_number, P, N, M); // заполняем этот массив
+
+        int*** array = new int** [K]; // массив всех матриц
+        int*** array_copy = new int** [K]; // копия массива всех матриц
+        creator(array, array_copy, K, N, M); // выделяем память под все матрицы и под их копии
+
+        filling(array, array_copy, mass_number, K, N, M, P); // заполнение матриц рандомными значениями, а также вывод на экран и в файл вместе с значением нулей
+
+        delete[] mass_number; // удаляем массив элементов, так как все матрицы уже заполнены
+
+        deliter(array, array_copy, K, N); // удаление массива и его копии
     }
-
-    cout << "Введите K (количество исходных матриц) ";
-    cin >> K;
-
-    cout << "Введите N (количество строк) ";
-    cin >> N;
-
-    cout << "Введите M (количество столбцов) ";
-    cin >> M;
-
-    cout << "Введите процент нулей ";
-    cin >> P;
-    cout << endl;
-
-    int* mass_number = new int[N * M]; // массив в котором храняться все возможные элементы матриц
-    all_elements(mass_number, P, N, M); // заполняем этот массив
-
-    int*** array = new int** [K]; // массив всех матриц
-    int*** array_copy = new int** [K]; // копия массива всех матриц
-    creator(array, array_copy, K, N, M); // выделяем память под все матрицы и под их копии
-
-    filling(array, array_copy, mass_number, K, N, M, P); // заполнение матриц рандомными значениями, а также вывод на экран и в файл вместе с значением нулей
-
-    delete[] mass_number; // удаляем массив элементов, так как все матрицы уже заполнены
-
-    deliter(array, array_copy, K, N); // удаление массива и его копии
-
-
 
      // чтение из файла
         // ввод матрицы в результирующий файл
