@@ -1,11 +1,27 @@
 #include <iostream>
 #include <ctime>
 #include <fstream>
+#include <sstream>
 
 using namespace std;
 
 void all_elements(int* mass_number, int P, int N, int M)
 {
+    /*int quantity_0 = (P * N * M) / 100; // количество 0 в каждой матрице
+
+    for (int i = 0; i < N * M; i++) // заполняем массив элементов
+    {
+        if (quantity_0 != 0) // сначала используем все нули
+        {
+            mass_number[i] = 0;
+            quantity_0--;
+        }
+        else
+        {
+            mass_number[i] = 1; // остальное заполняем единицами
+        }
+    }*/
+
     __asm
     {
         mov eax, P // вставляем P
@@ -44,33 +60,16 @@ void all_elements(int* mass_number, int P, int N, int M)
 
         End: // все элементы заполнены
     }
-
-    /*int quantity_0 = (P * N * M) / 100; // количество 0 в каждой матрице
-
-    for (int i = 0; i < N * M; i++) // заполняем массив элементов
-    {
-        if (quantity_0 != 0) // сначала используем все нули
-        {
-            mass_number[i] = 0;
-            quantity_0--;
-        }
-        else
-        {
-            mass_number[i] = 1; // остальное заполняем единицами
-        }
-    }*/
 }
 
-void creator(int*** array, int*** array_copy, int K, int N, int M)
+void creator(int*** array, int K, int N, int M)
 {
     for (int i = 0; i < K; i++) // i - индекс текущей матрицы
     {
         array[i] = new int* [N]; // выделение памяти под N строк в каждой матрице
-        array_copy[i] = new int* [N]; // выделение памяти под N строк в каждой матрице
         for (int j = 0; j < N; j++)
         {
             array[i][j] = new int[M]; // выделение памяти под M столбцов в каждой матрице
-            array_copy[i][j] = new int[M]; // выделение памяти под M столбцов в каждой матрице
         }
     }
 }
@@ -132,7 +131,7 @@ void zeros_finder(int*** array_copy, int& tek, int& i, int& j, int& k, int M, in
 
 void result(int ***array_copy, int i, int N, int M) // после подсчета искомых нулей выведет результат под матрицей
 {
-    ofstream fout1("gera_test.txt", ios_base::app);
+    ofstream fout1("gera_test1.txt", ios_base::app);
 
     int max_cnt = 0; // максимальное количество прилегающих нулей
 
@@ -172,7 +171,7 @@ void result(int ***array_copy, int i, int N, int M) // после подсчет
     }
 }
 
-void filling(int ***array, int ***array_copy, int* mass_number, int K, int N, int M, int P)
+void filling(int ***array, int* mass_number, int K, int N, int M, int P)
 {
     ofstream fout;
     fout.open("gera_test.txt", ios_base::app);
@@ -205,7 +204,7 @@ void filling(int ***array, int ***array_copy, int* mass_number, int K, int N, in
                     do
                     {
                         error = 0; // сбрасываем признак ошибки
-
+                        
                         index = left + rand() % (right - left + 1); // генерим случайное значение учитывая границы (+1, так как right это индекс)
 
                         for (int i = 0; i < N * M && mass_index[i] != -1; i++) // пробигаем по всему массиву индексов
@@ -258,37 +257,88 @@ void filling(int ***array, int ***array_copy, int* mass_number, int K, int N, in
                     mass_index[ind++] = index; // так как этот индекс ни разу не встречался - запоминаем его
 
                     array[i][j][k] = mass_number[index]; // то число которое было под этим индексом вставляем в матрицу
-                    array_copy[i][j][k] = array[i][j][k]; // копируем это число в копию матрицы
-
-                    cout << array[i][j][k] << " "; // вывод на экран
                     fout << array[i][j][k] << " "; // вывод в файл
                 }
-                cout << endl; // кончилась строка выводим enter на экран
                 fout << endl; // кончилась строка выводим enter в файл
             }
-
             delete[] mass_index; // удаляем массив индексов, так как для работы с текущей матрицей он больше не нужен
-
-            result(array_copy, i, N, M); // после подсчета искомых нулей выведет результат под матрицей
+            fout << endl;
         }
         fout.close();
     }
 }
 
-void deliter(int*** array, int*** array_copy , int K, int N) // удаление массива и его копии
+void input(int*** array, int*** array_copy, int K, int N, int M, int P) // ввод в файл с результатом
+{
+    ofstream fout2;
+    fout2.open("gera_test1.txt", ios_base::app);
+    if (!fout2.is_open())
+    {
+        cout << "Файл не может быть открыт!" << endl;
+    }
+    else
+    {
+        ifstream fin("gera_test.txt"); // открыли файл для чтения
+        if (!fin.is_open())
+        {
+            cout << "Файл не может быть открыт!" << endl;
+        }
+        else
+        {
+            string line; // Строчка текста
+
+            fout2 << "K = " << K << endl << "N = " << N << endl << "M = " << M << endl << "P = " << P << endl << endl;
+
+            int in = 4; // первые 4 строчки пропускаем
+            while (in >= 0)
+            {
+                if (in > 0)
+                {
+                    in--;
+                    int a;
+                    char space;
+                    fin >> space >> space >> a;
+                }
+                else
+                {
+                    in--;
+                    for (int i = 0; i < K; i++) // идем по каждой матрице
+                    {
+                        for (int j = 0; j < N; j++)
+                        {
+                            for (int k = 0; k < M; k++)
+                            {
+                                fin >> array[i][j][k];
+                                cout << array[i][j][k] << " "; // вывод на экран
+                                fout2 << array[i][j][k] << " "; // вывод в файл
+                                array_copy[i][j][k] = array[i][j][k]; // и в копию
+                            }
+                            cout << endl; // кончилась строка выводим enter на экран
+                            fout2 << endl; // вывод в файл
+                            getline(fin, line);
+                        }
+                        result(array_copy, i, N, M); // после подсчета искомых нулей выведет результат под матрицей
+                        getline(fin, line);
+                    }
+                }
+            }
+            fout2.close();
+        }
+        fin.close();
+    }
+}
+
+void deliter(int*** array, int K, int N) // удаление массива
 {
     for (int i = 0; i < K; i++)
     {
         for (int j = 0; j < N; j++)
         {
             delete[] array[i][j];
-            delete[] array_copy[i][j];
         }
         delete[] array[i];
-        delete[] array_copy[i];
     }
     delete[] array;
-    delete[] array_copy;
 }
 
 int main()
@@ -302,7 +352,7 @@ int main()
     int P; // процент нулей
 
     ofstream fout;
-    fout.open("gera_test.txt", ios_base::trunc);
+    fout.open("gera_test.txt", ios_base::trunc); // удаляем старое содержимое файла
     if (!fout.is_open())
     {
         cout << "Файл не может быть открыт!" << endl;
@@ -310,38 +360,74 @@ int main()
     else
     {
         fout.close();
+        ofstream fout3;
+        fout3.open("gera_test1.txt", ios_base::trunc); // удаляем старое содержимое файла
+        if (!fout3.is_open())
+        {
+            cout << "Файл не может быть открыт!" << endl;
+        }
+        else
+        {
+            fout3.close();
+            
+            cout << "Введите K (количество исходных матриц) ";
+            cin >> K;
 
-        cout << "Введите K (количество исходных матриц) ";
-        cin >> K;
+            cout << "Введите N (количество строк) ";
+            cin >> N;
 
-        cout << "Введите N (количество строк) ";
-        cin >> N;
+            cout << "Введите M (количество столбцов) ";
+            cin >> M;
 
-        cout << "Введите M (количество столбцов) ";
-        cin >> M;
+            cout << "Введите процент нулей ";
+            cin >> P;
+            cout << endl;
 
-        cout << "Введите процент нулей ";
-        cin >> P;
-        cout << endl;
+            int* mass_number = new int[N * M]; // массив в котором храняться все возможные элементы матриц
+            all_elements(mass_number, P, N, M); // заполняем этот массив
 
-        int* mass_number = new int[N * M]; // массив в котором храняться все возможные элементы матриц
-        all_elements(mass_number, P, N, M); // заполняем этот массив
+            int*** array = new int** [K]; // массив всех матриц
+            creator(array, K, N, M); // выделяем память под все матрицы
 
-        int*** array = new int** [K]; // массив всех матриц
-        int*** array_copy = new int** [K]; // копия массива всех матриц
-        creator(array, array_copy, K, N, M); // выделяем память под все матрицы и под их копии
+            filling(array, mass_number, K, N, M, P); // заполнение матриц рандомными значениями
 
-        filling(array, array_copy, mass_number, K, N, M, P); // заполнение матриц рандомными значениями, а также вывод на экран и в файл вместе с значением нулей
+            delete[] mass_number; // удаляем массив элементов, так как все матрицы уже заполнены
 
-        delete[] mass_number; // удаляем массив элементов, так как все матрицы уже заполнены
+            deliter(array, K, N); // удаление массива
 
-        deliter(array, array_copy, K, N); // удаление массива и его копии
+            /*обнуляем переменные чтобы взять их из файла*/
+            N = 0; // количество строк
+            M = 0; // количество столбцов
+            K = 0; // количество исходных матриц
+            P = 0; // процент нулей
+
+            ifstream fin("gera_test.txt"); // открыли файл для чтения
+            if (!fin.is_open())
+            {
+                cout << "Файл не может быть открыт!" << endl;
+            }
+            else
+            {
+                char space; // пустой символ для корректного считывания
+                /*считываем переменные*/
+                fin >> space >> space >> K;
+                fin >> space >> space >> N;
+                fin >> space >> space >> M;
+                fin >> space >> space >> P;
+
+                int*** array = new int** [K]; // массив всех матриц
+                int*** array_copy = new int** [K]; // копия массива всех матриц
+                creator(array, K, N, M); // выделяем память под все матрицы и под их копии
+                creator(array_copy, K, N, M); // выделяем память под все матрицы и под их копии
+
+                input(array, array_copy, K, N, M, P); // ввод в исходный файл вместе с результатом
+
+                deliter(array_copy, K, N); // удаление массива и его копии
+                deliter(array, K, N); // удаление массива и его копии
+
+                fin.close();
+            }
+        }
     }
-
-     // чтение из файла
-        // ввод матрицы в результирующий файл
-        // подсчет количества нулей
-        // вывод количества нулей
-
     return 0;
 }
