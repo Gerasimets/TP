@@ -2,25 +2,39 @@
 #include <ctime>
 #include <fstream>
 #include <sstream>
+#include <Windows.h>
 
 using namespace std;
 
+void deliter(int*** array, int K, int N) // удаление массива
+{
+    for (int i = 0; i < K; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            delete[] array[i][j];
+        }
+        delete[] array[i];
+    }
+    delete[] array;
+}
+
 void all_elements(int* mass_number, int P, int N, int M)
 {
-    /*int quantity_0 = (P * N * M) / 100; // количество 0 в каждой матрице
+    //int quantity_0 = (P * N * M) / 100; // количество 0 в каждой матрице
 
-    for (int i = 0; i < N * M; i++) // заполняем массив элементов
-    {
-        if (quantity_0 != 0) // сначала используем все нули
-        {
-            mass_number[i] = 0;
-            quantity_0--;
-        }
-        else
-        {
-            mass_number[i] = 1; // остальное заполняем единицами
-        }
-    }*/
+    //for (int i = 0; i < N * M; i++) // заполняем массив элементов
+    //{
+    //    if (quantity_0 != 0) // сначала используем все нули
+    //    {
+    //        mass_number[i] = 0;
+    //        quantity_0--;
+    //    }
+    //    else
+    //    {
+    //        mass_number[i] = 1; // остальное заполняем единицами
+    //    }
+    //}
 
     __asm
     {
@@ -74,7 +88,7 @@ void creator(int*** array, int K, int N, int M)
     }
 }
 
-void zeros_finder(int*** array_copy, int& tek, int& i, int& j, int& k, int M, int N)
+void zeros_finder(int*** array_copy, int& tek, int& i, int& j, int& k, int M, int N, int*** mas_tek)
 {
     if (j != 0) // смотрим сверху
     {
@@ -83,9 +97,11 @@ void zeros_finder(int*** array_copy, int& tek, int& i, int& j, int& k, int M, in
             array_copy[i][j - 1][k] = 1;
 
             tek++;
+
+            mas_tek[i][j - 1][k] = 1;
             
             int new_j = j - 1;
-            zeros_finder(array_copy, tek, i, new_j, k, M, N);
+            zeros_finder(array_copy, tek, i, new_j, k, M, N, mas_tek);
         }
     }
 
@@ -96,9 +112,11 @@ void zeros_finder(int*** array_copy, int& tek, int& i, int& j, int& k, int M, in
             array_copy[i][j][k + 1] = 1;
 
             tek++;
+
+            mas_tek[i][j][k + 1] = 1;
             
             int new_k = k + 1;
-            zeros_finder(array_copy, tek, i, j, new_k, M, N);
+            zeros_finder(array_copy, tek, i, j, new_k, M, N, mas_tek);
         }
     }
 
@@ -109,9 +127,11 @@ void zeros_finder(int*** array_copy, int& tek, int& i, int& j, int& k, int M, in
             array_copy[i][j + 1][k] = 1;
 
             tek++;
+
+            mas_tek[i][j + 1][k] = 1;
             
             int new_j = j + 1;
-            zeros_finder(array_copy, tek, i, new_j, k, M, N);
+            zeros_finder(array_copy, tek, i, new_j, k, M, N, mas_tek);
         }
     }
 
@@ -122,53 +142,65 @@ void zeros_finder(int*** array_copy, int& tek, int& i, int& j, int& k, int M, in
             array_copy[i][j][k - 1] = 1;
 
             tek++;
+
+            mas_tek[i][j][k - 1] = 1;
         
             int new_k = k - 1;
-            zeros_finder(array_copy, tek, i, j, new_k, M, N);
+            zeros_finder(array_copy, tek, i, j, new_k, M, N, mas_tek);
         }
     }
 }
 
-void result(int ***array_copy, int i, int N, int M) // после подсчета искомых нулей выведет результат под матрицей
+int result(int ***array_copy, int i, int K, int N, int M, int ***mas_max_cnt) // 
 {
-    ofstream fout1("gera_test1.txt", ios_base::app);
-
     int max_cnt = 0; // максимальное количество прилегающих нулей
 
+    int*** mas_tek = new int** [K];
+    creator(mas_tek, K, N, M);
+   
     for (int j = 0; j < N; j++)
     {
         for (int k = 0; k < M; k++)
         {
             if (array_copy[i][j][k] == 0) // нашли новую кучку
             {
+                for (int iq = 0; iq < K; iq++)
+                {
+                    for (int jq = 0; jq < N; jq++)
+                    {
+                        for (int kq = 0; kq < M; kq++)
+                        {
+                            mas_tek[iq][jq][kq] = 0;
+                        }
+                    }
+                }
+
                 int tek = 1; // количество нулей в текущей кучке
+                mas_tek[i][j][k] = 1;
 
                 array_copy[i][j][k] = 1; // чтобы больше не считать этот ноль заменяем его на 1
 
-                zeros_finder(array_copy, tek, i, j, k, M, N); // вызываем рекурсивную функцию, которая проверит есть ли вокруг этого нуля другие
+                zeros_finder(array_copy, tek, i, j, k, M, N, mas_tek); // вызываем рекурсивную функцию, которая проверит есть ли вокруг этого нуля другие
                 if (tek > max_cnt) // если в текущей кучке нулей больше чем в максимальной кучке до этого...
                 {
                     max_cnt = tek; // текущая кучка становится максимальной
+
+                    for (int i = 0; i < K; i++)
+                    {
+                        for (int j = 0; j < N; j++)
+                        {
+                            for (int k = 0; k < M; k++)
+                            {
+                                mas_max_cnt[i][j][k] = mas_tek[i][j][k];
+                            }
+                        }
+                    }
                 }
             }
         }
     }
-
-    if (max_cnt == 1)
-    {
-        cout << "нет примыкающих друг к другу нулей" << endl << endl; // кончилась матрица выводим второй enter на экран
-        fout1 << "нет примыкающих друг к другу нулей" << endl << endl; // кончилась матрица выводим второй enter в файл
-    }
-    else if (max_cnt == 0)
-    {
-        cout << "матрица состоит только из единиц" << endl << endl; // кончилась матрица выводим второй enter на экран
-        fout1 << "матрица состоит только из единиц" << endl << endl; // кончилась матрица выводим второй enter в файл
-    }
-    else
-    {
-        cout << "максимальное количество нулей примыкающих друг к другу = " << max_cnt << endl << endl; // кончилась матрица выводим второй enter на экран
-        fout1 << "максимальное количество нулей примыкающих друг к другу = " << max_cnt << endl << endl; // кончилась матрица выводим второй enter в файл
-    }
+    deliter(mas_tek, K, N); // 
+    return max_cnt;
 }
 
 void filling(int ***array, int* mass_number, int K, int N, int M, int P)
@@ -308,16 +340,61 @@ void input(int*** array, int*** array_copy, int K, int N, int M, int P) // вв�
                         {
                             for (int k = 0; k < M; k++)
                             {
-                                fin >> array[i][j][k];
-                                cout << array[i][j][k] << " "; // вывод на экран
+                                fin >> array[i][j][k]; // ввод из файла в матрицу
                                 fout2 << array[i][j][k] << " "; // вывод в файл
                                 array_copy[i][j][k] = array[i][j][k]; // и в копию
                             }
-                            cout << endl; // кончилась строка выводим enter на экран
                             fout2 << endl; // вывод в файл
                             getline(fin, line);
                         }
-                        result(array_copy, i, N, M); // после подсчета искомых нулей выведет результат под матрицей
+
+                        int*** mas_max_cnt = new int** [K];
+                        creator(mas_max_cnt, K, N, M);
+                        int zero = result(array_copy, i, K, N, M, mas_max_cnt);
+
+                        for (int j = 0; j < N; j++)
+                        {
+                            for (int k = 0; k < M; k++)
+                            {
+                                if (mas_max_cnt[i][j][k] == 1)
+                                {
+                                    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+                                    SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 4)); // голубой текст черный фон
+                                    cout << array[i][j][k] << " "; // вывод на экран
+                                    SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 7)); // белый текст черный фон
+                                }
+                                else if (array[i][j][k] == 0)
+                                {
+                                    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+                                    SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 3)); // красный текст черный фон
+                                    cout << array[i][j][k] << " "; // вывод на экран
+                                    SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 7)); // белый текст черный фон
+                                }
+                                else
+                                {
+                                    cout << array[i][j][k] << " "; // вывод на экран
+                                }
+                            }
+                            cout << endl; // кончилась строка выводим enter на экран
+                        }
+
+                        deliter(mas_max_cnt, K, N); // 
+
+                        if (zero == 1)
+                        {
+                            cout << "нет примыкающих друг к другу нулей" << endl << endl; // кончилась матрица выводим второй enter на экран
+                            fout2 << "нет примыкающих друг к другу нулей" << endl << endl; // кончилась матрица выводим второй enter в файл
+                        }
+                        else if (zero == 0)
+                        {
+                            cout << "матрица состоит только из единиц" << endl << endl; // кончилась матрица выводим второй enter на экран
+                            fout2 << "матрица состоит только из единиц" << endl << endl; // кончилась матрица выводим второй enter в файл
+                        }
+                        else
+                        {
+                            cout << "максимальное количество нулей примыкающих друг к другу = " << zero << endl << endl; // кончилась матрица выводим второй enter на экран
+                            fout2 << "максимальное количество нулей примыкающих друг к другу = " << zero << endl << endl; // кончилась матрица выводим второй enter в файл
+                        }
                         getline(fin, line);
                     }
                 }
@@ -326,19 +403,6 @@ void input(int*** array, int*** array_copy, int K, int N, int M, int P) // вв�
         }
         fin.close();
     }
-}
-
-void deliter(int*** array, int K, int N) // удаление массива
-{
-    for (int i = 0; i < K; i++)
-    {
-        for (int j = 0; j < N; j++)
-        {
-            delete[] array[i][j];
-        }
-        delete[] array[i];
-    }
-    delete[] array;
 }
 
 int main()
