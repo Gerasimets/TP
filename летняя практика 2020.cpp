@@ -23,7 +23,7 @@ void all_elements(int* mass_number, int P, int N, int M)
 {
     //int quantity_0 = (P * N * M) / 100; // количество 0 в каждой матрице
 
-    //for (int i = 0; i < N * M; i++) // заполняем массив элементов
+    //for (int i = 0; i < N * M; i++) // заполняем массив элементовк
     //{
     //    if (quantity_0 != 0) // сначала используем все нули
     //    {
@@ -151,7 +151,7 @@ void zeros_finder(int*** array_copy, int& tek, int& i, int& j, int& k, int M, in
     }
 }
 
-int result(int ***array_copy, int i, int K, int N, int M, int ***mas_max_cnt) // 
+int result(int ***array_copy, int i, int K, int N, int M, int ***mas_max_cnt, int &repit) // 
 {
     int max_cnt = 0; // максимальное количество прилегающих нулей
 
@@ -183,6 +183,7 @@ int result(int ***array_copy, int i, int K, int N, int M, int ***mas_max_cnt) //
                 zeros_finder(array_copy, tek, i, j, k, M, N, mas_tek); // вызываем рекурсивную функцию, которая проверит есть ли вокруг этого нуля другие
                 if (tek > max_cnt) // если в текущей кучке нулей больше чем в максимальной кучке до этого...
                 {
+                    repit = 1;
                     max_cnt = tek; // текущая кучка становится максимальной
 
                     for (int i = 0; i < K; i++)
@@ -192,6 +193,20 @@ int result(int ***array_copy, int i, int K, int N, int M, int ***mas_max_cnt) //
                             for (int k = 0; k < M; k++)
                             {
                                 mas_max_cnt[i][j][k] = mas_tek[i][j][k];
+                            }
+                        }
+                    }
+                }
+                else if (tek == max_cnt)
+                {
+                    repit++;
+                    for (int i = 0; i < K; i++)
+                    {
+                        for (int j = 0; j < N; j++)
+                        {
+                            for (int k = 0; k < M; k++)
+                            {
+                                mas_max_cnt[i][j][k] = mas_max_cnt[i][j][k] + mas_tek[i][j][k];
                             }
                         }
                     }
@@ -350,7 +365,8 @@ void input(int*** array, int*** array_copy, int K, int N, int M, int P) // вв�
 
                         int*** mas_max_cnt = new int** [K];
                         creator(mas_max_cnt, K, N, M);
-                        int zero = result(array_copy, i, K, N, M, mas_max_cnt);
+                        int repit = 1;
+                        int zero = result(array_copy, i, K, N, M, mas_max_cnt, repit);
 
                         for (int j = 0; j < N; j++)
                         {
@@ -392,7 +408,8 @@ void input(int*** array, int*** array_copy, int K, int N, int M, int P) // вв�
                         }
                         else
                         {
-                            cout << "максимальное количество нулей примыкающих друг к другу = " << zero << endl << endl; // кончилась матрица выводим второй enter на экран
+                            cout << "максимальное количество нулей примыкающих друг к другу = " << zero << endl; // кончилась матрица выводим второй enter на экран
+                            cout << "всего таких скоплений в матрице = " << repit << endl << endl;
                             fout2 << "максимальное количество нулей примыкающих друг к другу = " << zero << endl << endl; // кончилась матрица выводим второй enter в файл
                         }
                         getline(fin, line);
@@ -445,7 +462,10 @@ int main()
 
             cout << "Введите процент нулей ";
             cin >> P;
-            cout << endl;
+
+            cout << "Всего в каждой матрице "<< N * M << " элементов" <<endl;
+            cout << "Всего в каждой матрице " << ((P * N * M) / 100) << " нулей" << endl;
+            cout << "Всего в каждой матрице " << (N * M) - ((P * N * M) / 100) << " единиц" << endl;
 
             int* mass_number = new int[N * M]; // массив в котором храняться все возможные элементы матриц
             all_elements(mass_number, P, N, M); // заполняем этот массив
