@@ -356,17 +356,17 @@ void input(int*** array, int*** array_copy, int K, int N, int M, int P) // вв�
                         {
                             for (int k = 0; k < M; k++)
                             {
-                                if (mas_max_cnt[i][j][k] == 1)
+                                if (mas_max_cnt[i][j][k] == 1 && zero != 1)
                                 {
                                     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-                                    SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 4)); // голубой текст черный фон
+                                    SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 4)); // 
                                     cout << array[i][j][k] << " "; // вывод на экран
                                     SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 7)); // белый текст черный фон
                                 }
                                 else if (array[i][j][k] == 0)
                                 {
                                     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-                                    SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 3)); // красный текст черный фон
+                                    SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 3)); // 
                                     cout << array[i][j][k] << " "; // вывод на экран
                                     SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 7)); // белый текст черный фон
                                 }
