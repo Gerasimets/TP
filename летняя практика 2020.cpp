@@ -333,12 +333,12 @@ void filling(int*** array, int* mass_number, int K, int N, int M, int P)
                 }
                 else
                 {
-                    cout << "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b" << "Строка № " << j + 1 << " матрицы " << i + 1 << " заполнена ";
+                    cout << "\r" << "Строка № " << j + 1 << " матрицы " << i + 1 << " заполнена ";
                 }
             }
             delete[] mass_index; // удаляем массив индексов, так как для работы с текущей матрицей он больше не нужен
             fout << endl;
-            cout << "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b";
+            cout << "\r                                      \r";
         }
         fout.close();
     }
