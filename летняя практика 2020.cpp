@@ -92,9 +92,7 @@ void zeros_finder(int*** array_copy, int& tek, int& i, int& j, int& k, int M, in
 {
     if (j != 0 && array_copy[i][j - 1][k] == 0) // если мы находимся не на самой вехней строке, cмотрим элемент сверху
     {
-        tek++;
-
-        if (tek < 3480)
+        if (++tek < 3480)
         {
             array_copy[i][j - 1][k] = 1;
 
@@ -111,9 +109,7 @@ void zeros_finder(int*** array_copy, int& tek, int& i, int& j, int& k, int M, in
 
     if (k != (M - 1) && array_copy[i][j][k + 1] == 0) // если мы находимся не на самой правой строке, cмотрим элемент справа
     {
-        tek++;
-
-        if (tek < 3480)
+        if (++tek < 3480)
         {
             array_copy[i][j][k + 1] = 1;
 
@@ -130,9 +126,7 @@ void zeros_finder(int*** array_copy, int& tek, int& i, int& j, int& k, int M, in
 
     if (j != (N - 1) && array_copy[i][j + 1][k] == 0) //  // если мы находимся не на самой нижней строке, cмотрим элемент снизу
     {
-        tek++;
-
-        if (tek < 3480)
+        if (++tek < 3480)
         {
             array_copy[i][j + 1][k] = 1;
 
@@ -149,9 +143,7 @@ void zeros_finder(int*** array_copy, int& tek, int& i, int& j, int& k, int M, in
 
     if (k != 0 && array_copy[i][j][k - 1] == 0) //  // если мы находимся не на самой левой строке, cмотрим элемент слева
     {
-        tek++;
-
-        if (tek < 3480)
+        if (++tek < 3480)
         {
             array_copy[i][j][k - 1] = 1;
 
