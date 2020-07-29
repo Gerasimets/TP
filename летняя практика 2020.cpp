@@ -74,6 +74,15 @@ void all_elements(int* mass_number, int P, int N, int M)
 
         End : // все элементы заполнены
     }
+
+    for (int i = N * M - 1; i >= 1; i--)
+    {
+        int j = 0 + rand() % (i + 1);
+
+        int tmp = mass_number[j];
+        mass_number[j] = mass_number[i];
+        mass_number[i] = tmp;
+    }
 }
 
 void creator(int*** array, int K, int N, int M) // выделение память в передаваемом массиве
@@ -321,16 +330,16 @@ void filling(int*** array, int* mass_number, int K, int N, int M, int P)
                 fout << endl; // кончилась строка выводим enter в файл
                 if (j == 0)
                 {
-                    cout << "Строка № " << j + 1 << " матрицы " << i + 1 << " заполнена ";
+                    cout << "Строка № " << j + 1 << " матрицы " << i + 1 << " заполнена";
                 }
                 else
                 {
-                    cout << "\r" << "Строка № " << j + 1 << " матрицы " << i + 1 << " заполнена ";
+                    cout << "\r" << "Строка № " << j + 1 << " матрицы " << i + 1 << " заполнена";
                 }
             }
             delete[] mass_index; // удаляем массив индексов, так как для работы с текущей матрицей он больше не нужен
             fout << endl;
-            cout << "\r                                      \r";
+            cout << "\r                                       \r";
         }
         fout.close();
     }
